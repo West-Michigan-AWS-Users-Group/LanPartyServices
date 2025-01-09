@@ -10,5 +10,5 @@ __pycache__
 cdk.out
 
 # Do not upload pak files, copyrighted material
-*.pak
+*.pk3
 lan_party_services/quake3/baseq3/*.pak

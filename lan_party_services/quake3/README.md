@@ -4,6 +4,8 @@ Using the https://github.com/InAnimaTe/docker-quake3 image, we can run a Quake 3
 
 The pak files are not free, you must own a copy of those.
 
+The mod pk3 files must also be copied into the `baseq3` directory.
+
 
 ## Building locally
 ```bash

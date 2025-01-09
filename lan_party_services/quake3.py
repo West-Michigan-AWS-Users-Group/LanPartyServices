@@ -91,7 +91,15 @@ class Quake3Stack(Stack):
                                                        image=ecs.ContainerImage.from_docker_image_asset(image),
                                                        memory_limit_mib=512,
                                                        logging=ecs.LogDriver.aws_logs(stream_prefix="Quake3",
-                                                                                      log_group=log_group))
+                                                                                      log_group=log_group),
+                                                       # Update commands here to switch server config.
+                                                       # https://github.com/LacledesLAN/gamesvr-ioquake3
+                                                       command=["/app/ioq3ded.x86_64",
+                                                                "+set", "com_hunkmegs", "256",
+                                                                "+set", "fs_game", "osp",
+                                                                "+exec", "ffa-instagib.cfg",
+                                                                "+exec", "playlists.cfg",
+                                                                "+vstr", "stock-dm-1"])
 
         # Create the Fargate service
         service = ecs.FargateService(self, "Quake3Service",
@@ -100,9 +108,7 @@ class Quake3Stack(Stack):
                                      desired_count=1,
                                      security_groups=[nlb_tg_security_group])
 
-        # Add port mappings for the container
         main_container.add_port_mappings(ecs.PortMapping(container_port=app_port, protocol=ecs.Protocol.TCP))
-        # main_container.add_port_mappings(ecs.PortMapping(container_port=app_port, protocol=ecs.Protocol.UDP))
 
         # Add SG rules to NLB in core stack
         nlb_tg_security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(app_port),
