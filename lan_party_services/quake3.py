@@ -47,8 +47,8 @@ class Quake3(Stack):
                                                                  memory_limit_mib=512,
                                                                  public_load_balancer=True)
 
-        # Add port mappings
-        container = service.task_definition.default_container
-        container.add_port_mappings(
-            ecs.PortMapping(container_port=27960, protocol=ecs.Protocol.UDP)
-        )
+        # # Add port mappings
+        # container = service.task_definition.default_container
+        # container.add_port_mappings(
+        #     ecs.PortMapping(container_port=27960, protocol=ecs.Protocol.UDP)
+        # )
