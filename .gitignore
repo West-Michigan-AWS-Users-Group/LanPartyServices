@@ -8,3 +8,7 @@ __pycache__
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+
+# Do not upload pak files, copyrighted material
+*.pak
+lan_party_services/quake3/baseq3/*.pak
