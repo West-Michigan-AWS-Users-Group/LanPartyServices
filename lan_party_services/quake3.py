@@ -102,27 +102,32 @@ class Quake3Stack(Stack):
 
         # Add port mappings for the container
         main_container.add_port_mappings(ecs.PortMapping(container_port=app_port, protocol=ecs.Protocol.TCP))
-        main_container.add_port_mappings(ecs.PortMapping(container_port=app_port, protocol=ecs.Protocol.UDP))
+        # main_container.add_port_mappings(ecs.PortMapping(container_port=app_port, protocol=ecs.Protocol.UDP))
+
         # Add SG rules to NLB in core stack
         nlb_tg_security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(app_port),
                                                f"Allow TCP traffic on {app_port}")
         nlb_tg_security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.udp(app_port),
                                                f"Allow UDP traffic on {app_port}")
+
         # Add a tcp/udp listener
-        # tcp_udp_listener = nlb.add_listener(f"TCPUDPListener{app_port}", port=app_port, protocol=elbv2.Protocol.TCP_UDP)
-        # tcp_udp_listener.add_targets(f"FargateServiceTargetTCPUDP{app_port}",
-        #                              port=app_port,
-        #                              protocol=elbv2.Protocol.TCP_UDP,
-        #                              targets=[service],
-        #                              health_check=elbv2.HealthCheck(
-        #                                  interval=Duration.seconds(15),
-        #                                  timeout=Duration.seconds(10),
-        #                                  healthy_threshold_count=2,
-        #                                  unhealthy_threshold_count=2,
-        #                                  port=str(health_check_port),
-        #                                  protocol=elbv2.Protocol.TCP
-        #                              ))
-        # 
+        tcp_udp_listener = nlb.add_listener(f"TCPUDPListener{app_port}", port=app_port, protocol=elbv2.Protocol.TCP_UDP)
+        tcp_udp_listener.add_targets(f"FargateServiceTargetTCPUDP{app_port}",
+                                     port=app_port,
+                                     protocol=elbv2.Protocol.TCP_UDP,
+                                     targets=[service.load_balancer_target(
+                                         container_name="quake3-container",
+                                         container_port=app_port
+                                     )],
+                                     health_check=elbv2.HealthCheck(
+                                         interval=Duration.seconds(15),
+                                         timeout=Duration.seconds(10),
+                                         healthy_threshold_count=2,
+                                         unhealthy_threshold_count=2,
+                                         port=str(health_check_port),
+                                         protocol=elbv2.Protocol.TCP
+                                     ))
+
         # Add health check port to the security group
         nlb_tg_security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(health_check_port),
                                                f"Allow TCP traffic on {health_check_port}")
@@ -133,4 +138,3 @@ class Quake3Stack(Stack):
                         record_name="quake3.grlanparty.info",
                         target=route53.RecordTarget.from_alias(targets.LoadBalancerTarget(nlb)),
                         zone=zone)
-
