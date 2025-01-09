@@ -125,8 +125,8 @@ class Quake3Stack(Stack):
                                          healthy_threshold_count=2,
                                          unhealthy_threshold_count=2,
                                          port=str(health_check_port),
-                                         protocol=elbv2.Protocol.TCP
-                                     ))
+                                         protocol=elbv2.Protocol.TCP),
+                                     deregistration_delay=Duration.seconds(0))
 
         # Add health check port to the security group
         nlb_tg_security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(health_check_port),
