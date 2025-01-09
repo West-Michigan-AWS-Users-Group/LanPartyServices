@@ -40,6 +40,13 @@ $ pip install -r requirements.txt
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
+export AWS_ACCOUNT_ID=<account-id>                                    
+export AWS_REGION=us-east-2
+export AWS_PROFILE=wmaug-member
+export AWS_DEFAULT_PROFILE=wmaug-member
+export CDK_DEFAULT_ACCOUNT=wmaug-member
+export CDK_DEFAULT_REGION=us-east-2
+
 $ cdk synth
-$ AWS_DEFAULT_PROFILE=wmaug-member CDK_DEFAULT_ACCOUNT=wmaug-member CDK_DEFAULT_REGION=us-east-2 AWS_REGION=us-east-2 cdk deploy
+cdk deploy --all
 ```
