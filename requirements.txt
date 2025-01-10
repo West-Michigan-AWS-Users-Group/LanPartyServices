@@ -1,2 +1,4 @@
 aws-cdk-lib==2.173.2
 constructs>=10.0.0,<11.0.0
+markdown==3.7
+boto3==1.35.96

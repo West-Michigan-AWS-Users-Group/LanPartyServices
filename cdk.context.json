@@ -1,0 +1,15 @@
+{
+  "hosted-zone:account=145023128664:domainName=grlanparty.info:region=us-east-1": {
+    "Id": "/hostedzone/Z06818463VKCFK5UPS149",
+    "Name": "grlanparty.info."
+  },
+  "availability-zones:account=145023128664:region=us-east-2": [
+    "us-east-2a",
+    "us-east-2b",
+    "us-east-2c"
+  ],
+  "hosted-zone:account=145023128664:domainName=grlanparty.info:region=us-east-2": {
+    "Id": "/hostedzone/Z06818463VKCFK5UPS149",
+    "Name": "grlanparty.info."
+  }
+}

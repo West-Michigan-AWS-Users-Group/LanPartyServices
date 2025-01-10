@@ -1,5 +1,10 @@
 # Unreal Tournament 99
+<a href="javascript:history.back()" style="text-decoration: none; color: black;">&#8592; Back</a>
+
+
 Legendary FPS Arena shooter.
+
+**Server Url**: `ut99.grlanparty.info`
 
 This server has a number of mutators configured and is based off of [this container](https://github.com/Roemer/ut99-server). 
 
@@ -9,19 +14,17 @@ Tested Game Modes/Mutators:
 
 See the source README in the aformenteioned link for more information on avaialble game modes and mutators.
 
-# Supported Platforms
+### Supported Platforms
 Windows, Mac, Linux
 
-# Installation
+### Installation
 
-## Steam
-Unreal Tournament 99 was deslisted form Steam years ago, however you might have it in your library. This version
+#### Steam
+Unreal Tournament 99 was de-listed from Steam years ago, however you might have it in your library. This version
 of the game works just as fine as any other client versions provided by OldUnreal.
 
-## Source
+#### Source
 Download the latest version of Unreal Tournament from the OldUnreal Github releases: https://github.com/OldUnreal/UnrealTournamentPatches/releases
 Download the necessary files from the mirror site. 
 Follow the instructions [here](https://github.com/OldUnreal/UnrealTournamentPatches/blob/master/README.md) for your OS specific installation.
 
-# Multiplayer information
-Server Url:ut99.grlanparty.info

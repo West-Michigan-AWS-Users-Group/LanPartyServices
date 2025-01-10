@@ -2,13 +2,18 @@
 
 This app contains:
 - Web front end for serving content for LAN attendees
-- Unreal Tournament 99 server
-- Quake 3 server
+
+Game Servers:
+- Descent 3
+- Unreal Tournament 99 server (minus maps, music sounds and texture copyrighted material)
+- Unreal Tournament 2004 server
+- Quake 3 server (minus pak0.pk3 copyrighted material)
 - Tee-worlds server
 - Open-RA server
 
-And information on other games where a server isn't required/supported.
-- Starcraft: Brood War info
+Game Files/Info:
+- Starcraft: Brood War
+- Total Annihilation
 
 
 ```

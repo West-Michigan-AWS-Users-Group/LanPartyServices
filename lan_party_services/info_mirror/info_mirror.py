@@ -17,6 +17,8 @@ class info(Stack):
         :param kwargs:
         """
         zone = route53.HostedZone.from_lookup(self, "Zone", domain_name=domain_name)
+        # Copyrighted material, binaries or other large files that cannot be otherwise stored publicly in git
+        asset_bucket = 'cdk-hnb659fds-assets-145023128664-us-east-2'
 
         cloudfront_oai = cloudfront.OriginAccessIdentity(self, "cloudfrontOai", comment=f"OAI for {construct_id}")
 
@@ -142,5 +144,19 @@ function handler(event) {{
                                        destination_bucket=bucket,
                                        distribution=distribution,
                                        distribution_paths=["/*"])
+
+        asset_file_paths = [
+            ("total_annihiliation/setup_total_annihilation_commander_pack_3.1_(22139).exe", "total_annihiliation"),
+            ("total_annihiliation/total_annihilation__commander_pack_en_1_3_15733.pkg", "total_annihiliation"),
+            ("quake3/baseq3/pak0.pk3", "quake3/baseq3")
+        ]
+
+        for file_path, prefix in asset_file_paths:
+            s3_deployment.BucketDeployment(self, f"Deploy{file_path.replace('/', '_').replace('.', '_')}",
+                                           sources=[s3_deployment.Source.bucket(bucket_name=asset_bucket, object_key=file_path)],
+                                           destination_bucket=bucket,
+                                           destination_key_prefix=prefix,
+                                           distribution=distribution,
+                                           distribution_paths=[f"/{file_path}"])
 
         CfnOutput(self, "websiteUrl", value=f"https://{domain_name}")

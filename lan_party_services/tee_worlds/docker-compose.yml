@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  teeworlds:
+    image: ich777/teeworldsserver
+    container_name: Teeworlds
+    ports:
+      - "8303:8303"
+      - "8303:8303/udp"
+    environment:
+      - GAME_CONFIG=dm.cfg
+      - UID=99
+      - GID=100
+    # volumes:
+    #   - /mnt/user/appdata/teeworlds:/serverdata/serverfiles
