@@ -1,4 +1,4 @@
-from aws_cdk import (CfnOutput, Duration, RemovalPolicy, Stack, aws_certificatemanager as certificatemanager,
+from aws_cdk import (Aws, CfnOutput, Duration, RemovalPolicy, Stack, aws_certificatemanager as certificatemanager,
                      aws_cloudfront as cloudfront, aws_cloudfront_origins as origins, aws_iam as iam,
                      aws_route53 as route53, aws_route53_targets as targets, aws_s3 as s3,
                      aws_s3_deployment as s3_deployment)
@@ -20,7 +20,7 @@ class info(Stack):
         zone = route53.HostedZone.from_lookup(self, "Zone", domain_name=domain_name)
         # Copyrighted material, binaries or other large files that cannot be otherwise stored publicly in git
         account_number = os.getenv("AWS_ACCOUNT_NUMBER")
-        asset_bucket_name = f"cdk-hnb659fds-assets-{account_number}-us-east-2"
+        asset_bucket_name = f"cdk-hnb659fds-assets-{account_number}-{Aws.REGION}"
 
         bucket = s3.Bucket(self, "bucket",
                            bucket_name=domain_name,
