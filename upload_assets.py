@@ -15,7 +15,7 @@ config = Config(max_pool_connections=50)
 s3_client = boto3.client('s3', config=config)
 
 account_number = os.getenv('AWS_ACCOUNT_NUMBER')
-bucket_name = f'cdk-hnb659fds-assets-{account_number}-us-east-2'
+bucket_name = f'cdk-hnb659fds-assets-{account_number}-us-east-1'
 
 
 def file_exists(bucket: str, key: str) -> bool:
