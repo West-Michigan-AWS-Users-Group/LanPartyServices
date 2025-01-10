@@ -3,7 +3,8 @@ from aws_cdk import (CfnOutput, Duration, RemovalPolicy, Stack, aws_certificatem
                      aws_route53 as route53, aws_route53_targets as targets, aws_s3 as s3,
                      aws_s3_deployment as s3_deployment)
 from constructs import Construct
-
+import os
+from lan_party_services.asset_paths import asset_file_paths
 
 class info(Stack):
     def __init__(self, scope: Construct, construct_id: str, domain_name: str = "grlanparty.info",
@@ -18,9 +19,8 @@ class info(Stack):
         """
         zone = route53.HostedZone.from_lookup(self, "Zone", domain_name=domain_name)
         # Copyrighted material, binaries or other large files that cannot be otherwise stored publicly in git
-        asset_bucket = 'cdk-hnb659fds-assets-145023128664-us-east-2'
-
-        cloudfront_oai = cloudfront.OriginAccessIdentity(self, "cloudfrontOai", comment=f"OAI for {construct_id}")
+        account_number = os.getenv("AWS_ACCOUNT_NUMBER")
+        asset_bucket_name = f"cdk-hnb659fds-assets-{account_number}-us-east-2"
 
         bucket = s3.Bucket(self, "bucket",
                            bucket_name=domain_name,
@@ -28,6 +28,8 @@ class info(Stack):
                            public_read_access=False,
                            auto_delete_objects=True,
                            removal_policy=RemovalPolicy.DESTROY)
+
+        cloudfront_oai = cloudfront.OriginAccessIdentity(self, "cloudfrontOai", comment=f"OAI for {construct_id}")
 
         bucket.grant_read(cloudfront_oai)
         bucket.add_to_resource_policy(
@@ -88,7 +90,7 @@ function handler(event) {{
                                                                                       override=True)
                                                                               ))
 
-        s3origin = origins.S3Origin(bucket, origin_access_identity=cloudfront_oai)
+        s3_origin = origins.S3Origin(bucket, origin_access_identity=cloudfront_oai)
 
         distribution = cloudfront.Distribution(self, "distribution",
                                                certificate=certificate,
@@ -104,7 +106,7 @@ function handler(event) {{
                                                    )
                                                ],
                                                default_behavior=cloudfront.BehaviorOptions(
-                                                   origin=s3origin,
+                                                   origin=s3_origin,
                                                    compress=True,
                                                    function_associations=[
                                                        cloudfront.FunctionAssociation(
@@ -115,7 +117,7 @@ function handler(event) {{
                                                ),
                                                additional_behaviors={
                                                    "/index.html": cloudfront.BehaviorOptions(
-                                                       origin=s3origin,
+                                                       origin=s3_origin,
                                                        response_headers_policy=my_response_headers_policy_website,
                                                        viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                                                        allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD,
@@ -145,18 +147,19 @@ function handler(event) {{
                                        distribution=distribution,
                                        distribution_paths=["/*"])
 
-        asset_file_paths = [
-            ("total_annihiliation/setup_total_annihilation_commander_pack_3.1_(22139).exe", "total_annihiliation"),
-            ("total_annihiliation/total_annihilation__commander_pack_en_1_3_15733.pkg", "total_annihiliation"),
-            ("quake3/baseq3/pak0.pk3", "quake3/baseq3")
-        ]
+        asset_bucket = s3.Bucket.from_bucket_name(self, "AssetBucket",
+                                                  asset_bucket_name)
 
         for file_path, prefix in asset_file_paths:
-            s3_deployment.BucketDeployment(self, f"Deploy{file_path.replace('/', '_').replace('.', '_')}",
-                                           sources=[s3_deployment.Source.bucket(bucket_name=asset_bucket, object_key=file_path)],
+            zip_file_path = f"{file_path}.zip" if not file_path.endswith('.zip') else file_path
+            s3_deployment.BucketDeployment(self, f"Deploy{zip_file_path.replace('/', '_').replace('.', '_')}",
+                                           sources=[s3_deployment.Source.bucket(
+                                               bucket=asset_bucket,  # Use the bucket object here
+                                               zip_object_key=zip_file_path)],
                                            destination_bucket=bucket,
                                            destination_key_prefix=prefix,
                                            distribution=distribution,
-                                           distribution_paths=[f"/{file_path}"])
+                                           distribution_paths=[f"/{zip_file_path}"],
+                                           memory_limit=1024)
 
         CfnOutput(self, "websiteUrl", value=f"https://{domain_name}")

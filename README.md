@@ -15,15 +15,44 @@ Game Files/Info:
 - Starcraft: Brood War
 - Total Annihilation
 
+Requirements:
+- AWS Account + Profile configured
+- Python venv
+- CDK bootstrapped environment
 
-```
+1. Set up a bunch of environment variables for the CDK app to use. 
+```bash
 export AWS_ACCOUNT_NUMBER=<account-number>                                    
 export AWS_REGION=us-east-1
 export AWS_PROFILE=wmaug-member
 export AWS_DEFAULT_PROFILE=wmaug-member
 export CDK_DEFAULT_ACCOUNT=wmaug-member
 export CDK_DEFAULT_REGION=us-east-1
-
-$ cdk synth
-cdk deploy --all
 ```
+
+2. Create a python virtual environment and install the required packages:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+3. Obtain all the necessary files as outlined in `lan_party_services/asset_paths.py`. See each respective app README for
+links or more information. 
+
+4. Upload them to an assets bucket. These files are required for the game servers to run or for people to play.
+```bash
+python3 ./upload_assets.py
+```
+
+5. Login to AWS SSO (if using AWS SSO):
+```bash
+aws sso login --profile <profile>
+```
+6. synth and deploy the CDK app:
+```bash
+$ cdk synth
+$ cdk deploy --all # or
+$ cdk deploy <stack-name> # prod-lan-party-services-info | prod-lan-party-services-core | prod-lan-party-services-quake3 | etc. See app.py for stack names
+```
+

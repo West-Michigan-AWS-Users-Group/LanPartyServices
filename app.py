@@ -25,11 +25,15 @@ env_us_east_2 = cdk.Environment(account=account, region='us-east-2')
 
 app = cdk.App()
 
-# Define stacks with the appropriate env parameter
-info(app, "info", env=env_us_east_1)
-core(app, "core", env=env_us_east_2)
-quake3(app, "quake3", env=env_us_east_2)
-ut99(app, "ut99", env=env_us_east_2)
-teeworlds(app, "teeworlds", env=env_us_east_2)
+# Define stacks with the appropriate env parameter and prefix
+environment = "prod"
+prefix = "lan-party-services"
+
+info(app, f"{environment}-{prefix}-info", env=env_us_east_1)
+
+core(app, f"{environment}-{prefix}-core", env=env_us_east_2)
+quake3(app, f"{environment}-{prefix}-quake3", env=env_us_east_2)
+ut99(app, f"{environment}-{prefix}-ut99", env=env_us_east_2)
+teeworlds(app, f"{environment}-{prefix}-teeworlds", env=env_us_east_2)
 
 app.synth()

@@ -1,37 +1,82 @@
 import os
 import markdown
+from typing import List
 
-# Define the root directory and the target directory for HTML files
-root_dir = 'lan_party_services'
-target_dir = os.path.join(root_dir, 'info_mirror')
+def convert_md_to_html(root_dir: str, target_dir: str) -> None:
+    """
+    Convert Markdown files to HTML and save them in the target directory.
 
-# Ensure the target directory exists
-os.makedirs(target_dir, exist_ok=True)
+    :param root_dir: The root directory to search for Markdown files.
+    :param target_dir: The target directory to save the converted HTML files.
+    """
+    # Ensure the target directory exists
+    os.makedirs(target_dir, exist_ok=True)
 
-# CSS link to be added to each HTML file
-css_link = '<link rel="stylesheet" type="text/css" href="../styles.css">'
+    # CSS link to be added to each HTML file
+    css_link = '<link rel="stylesheet" type="text/css" href="../styles.css">'
 
-# Walk through the root directory
-for subdir, _, files in os.walk(root_dir):
-    if 'README.md' in files:
-        readme_path = os.path.join(subdir, 'README.md')
-        with open(readme_path, 'r', encoding='utf-8') as f:
-            md_content = f.read()
+    # Walk through the root directory
+    for subdir, _, files in os.walk(root_dir):
+        if 'README.md' in files:
+            readme_path = os.path.join(subdir, 'README.md')
+            with open(readme_path, 'r', encoding='utf-8') as f:
+                md_content = f.read()
 
-        # Convert markdown to HTML
-        html_content = markdown.markdown(md_content)
+            # Convert markdown to HTML
+            html_content = markdown.markdown(md_content)
 
-        # Add the CSS link to the HTML content
-        html_content_with_css = f'<html><head>{css_link}</head><body>{html_content}</body></html>'
+            # Add the CSS link to the HTML content
+            html_content_with_css = f'<html><head>{css_link}</head><body>{html_content}</body></html>'
 
-        # Determine the output HTML file path
-        relative_path = os.path.relpath(subdir, root_dir)
-        output_dir = os.path.join(target_dir, relative_path)
-        os.makedirs(output_dir, exist_ok=True)
-        output_path = os.path.join(output_dir, 'index.html')
+            # Determine the output HTML file path
+            relative_path = os.path.relpath(subdir, root_dir)
+            output_dir = os.path.join(target_dir, relative_path)
+            os.makedirs(output_dir, exist_ok=True)
+            output_path = os.path.join(output_dir, 'index.html')
 
-        # Write the HTML content to the output file
-        with open(output_path, 'w', encoding='utf-8') as f:
-            f.write(html_content_with_css)
+            # Write the HTML content to the output file
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write(html_content_with_css)
 
-print("Markdown files have been converted to HTML with CSS and saved in the info_mirror directory.")
+    print("Markdown files have been converted to HTML with CSS and saved in the info_mirror directory.")
+
+def render_script_js(root_dir: str, script_path: str) -> None:
+    """
+    Render the script.js file with the folders in the root directory, excluding 'core' and 'info_mirror'.
+
+    :param root_dir: The root directory to search for folders.
+    :param script_path: The path to the script.js file to be updated.
+    """
+    # Get the list of folders excluding 'core' and 'info_mirror'
+    folders: List[str] = [d for d in os.listdir(root_dir) if os.path.isdir(os.path.join(root_dir, d)) and d not in ['__pycache__', 'core', 'info_mirror']]
+
+    # JavaScript code to be written to the script.js file
+    js_code = f"""
+document.addEventListener("DOMContentLoaded", function() {{
+    const folders = {folders};
+    const folderList = document.getElementById("folder-list");
+
+    folders.forEach(folder => {{
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = `/${{folder}}/index.html`;
+        link.textContent = folder;
+        listItem.appendChild(link);
+        folderList.appendChild(listItem);
+    }});
+}});
+"""
+
+    # Write the JavaScript code to the script.js file
+    with open(script_path, 'w', encoding='utf-8') as f:
+        f.write(js_code)
+
+    print(f"Script.js file has been updated with folders from {root_dir}.")
+
+if __name__ == "__main__":
+    root_directory = 'lan_party_services'
+    target_directory = os.path.join(root_directory, 'info_mirror')
+    script_js_path = os.path.join(target_directory, 'script.js')
+
+    convert_md_to_html(root_directory, target_directory)
+    render_script_js(root_directory, script_js_path)

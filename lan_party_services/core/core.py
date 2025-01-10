@@ -20,7 +20,7 @@ class core(Stack):
             ),
             ec2.SubnetConfiguration(
                 name="Private",
-                subnet_type=ec2.SubnetType.PRIVATE_WITH_NAT,
+                subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS,
                 cidr_mask=20
             )
         ])

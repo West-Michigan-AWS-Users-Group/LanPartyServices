@@ -9,11 +9,11 @@ __pycache__
 .cdk.staging
 cdk.out
 
-# Do not upload pak files, copyrighted material
+# Do not upload copyrighted material
 *.pk3
 lan_party_services/quake3/baseq3/*.pak
-
-# Do no upload UT3 files, copyrighted material
 lan_party_services/ut99/Maps-Music-Sounds-Textures.zip
 lan_party_services/total_annihiliation/setup_total_annihilation_commander_pack_3.1_(22139)
 lan_party_services/total_annihiliation/total_annihiliation/total_annihilation__commander_pack_en_1_3_15733.pkg
+
+*.DS_STORE
