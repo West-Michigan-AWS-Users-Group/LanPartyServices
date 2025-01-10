@@ -1,43 +1,15 @@
+# CDK app to deploy and run a number of video game servers for a LAN party
 
-# Welcome to your CDK Python project!
+This app contains:
+- Web front end for serving content for LAN attendees
+- Unreal Tournament 99 server
+- Quake 3 server
+- Tee-worlds server
+- Open-RA server
 
-This is a blank project for CDK development with Python.
+And information on other games where a server isn't required/supported.
+- Starcraft: Brood War info
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
-
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
-
-To manually create a virtualenv on MacOS and Linux:
-
-```
-$ python3 -m venv .venv
-```
-
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
-
-```
-$ source .venv/bin/activate
-```
-
-If you are a Windows platform, you would activate the virtualenv like this:
-
-```
-% .venv\Scripts\activate.bat
-```
-
-Once the virtualenv is activated, you can install the required dependencies.
-
-```
-$ pip install -r requirements.txt
-```
-
-At this point you can now synthesize the CloudFormation template for this code.
 
 ```
 export AWS_ACCOUNT_NUMBER=<account-number>                                    

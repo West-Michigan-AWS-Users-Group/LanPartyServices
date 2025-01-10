@@ -1,18 +1,26 @@
 ## Quake 3.
-Using the https://github.com/InAnimaTe/docker-quake3 image, we can run a Quake 3 server in a container.
-`server.cfg` takes the following parameters: http://www.joz3d.net/html/q3console.html
+Arena FPS game. This server is using the [lacledeslan/gamesvr-ioquake3](https://github.com/LacledesLAN/gamesvr-ioquake3) Docker image.
 
-The pak files are not free, you must own a copy of those.
+This container has the following modes:
+#### Vanilla
+- FFA Deathmatch
+- Team Deathmatch
+- CTF
+#### Instagib
+- Instagib Deathmatch
+- Instagib Team Deathmatch
+- Instagib 1v1
+- Instagib CTF
+#### Other
+- Free Tag Team Deathmatch
 
-The mod pk3 files must also be copied into the `baseq3` directory.
+Server can be changed to any of the above modes by changing start CMD of the docker container. 
 
-
-## Building locally
-```bash
-docker build -t quake3 lan_party_services/quake3/
-docker run -d -p 27960:27960/udp quake3
-```
-
-
-## Client download
+## Installation
+IOQuake3 is a free, standalone first person shooter game engine based on the Quake 3: Arena source code. 
 https://ioquake3.org/get-it/
+It requires a pak0.pak3 files from the original Quake 3: Arena game to play. You can download this from the mirror site.
+Follow the instructions on the site specific to your OS to play. 
+
+# Multiplayer information
+Server Url:quake3.grlanparty.info

@@ -5,12 +5,12 @@ used_azs = {
     'us-east-2': ['us-east-2a']
 }
 
-class CoreStack(Stack):
+
+class core(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         # add tags
-        Tags.of(self).add("service", "LanPartyServices")
-        Tags.of(self).add("stack", self.__class__.__name__)
+        Tags.of(self).add("service", self.__class__.__name__)
 
         vpc = ec2.Vpc(self, "CoreVPC", max_azs=len(used_azs), subnet_configuration=[
             ec2.SubnetConfiguration(
@@ -49,14 +49,22 @@ class CoreStack(Stack):
         nlb_tg_security_group.add_ingress_rule(peer=nlb_tg_security_group, connection=ec2.Port.all_traffic())
 
         CfnOutput(self, "VpcId", value=vpc.vpc_id, export_name="VpcId")
-        CfnOutput(self, "LanPartyServersClusterName", value=cluster.cluster_name, export_name="LanPartyServersClusterName")
-        CfnOutput(self, "PublicSubnetIds", value=",".join([subnet.subnet_id for subnet in vpc.public_subnets]), export_name="PublicSubnetIds")
-        CfnOutput(self, "PrivateSubnetIds", value=",".join([subnet.subnet_id for subnet in vpc.private_subnets]), export_name="PrivateSubnetIds")
+        CfnOutput(self, "LanPartyServersClusterName", value=cluster.cluster_name,
+                  export_name="LanPartyServersClusterName")
+        CfnOutput(self, "PublicSubnetIds", value=",".join([subnet.subnet_id for subnet in vpc.public_subnets]),
+                  export_name="PublicSubnetIds")
+        CfnOutput(self, "PrivateSubnetIds", value=",".join([subnet.subnet_id for subnet in vpc.private_subnets]),
+                  export_name="PrivateSubnetIds")
         CfnOutput(self, "PublicNLBArn", value=nlb.load_balancer_arn, export_name="PublicNLBArn")
         CfnOutput(self, "NlbTgSGId", value=nlb_tg_security_group.security_group_id, export_name="NlbTgSGId")
         CfnOutput(self, "PublicNLBDnsName", value=nlb.load_balancer_dns_name, export_name="PublicNLBDnsName")
-        CfnOutput(self, "PublicNLBCanonicalHostedZoneId", value=nlb.load_balancer_canonical_hosted_zone_id, export_name="PublicNLBCanonicalHostedZoneId")
+        CfnOutput(self, "PublicNLBCanonicalHostedZoneId", value=nlb.load_balancer_canonical_hosted_zone_id,
+                  export_name="PublicNLBCanonicalHostedZoneId")
 
         # Export route table IDs
-        CfnOutput(self, "PublicRouteTableIds", value=",".join([subnet.route_table.route_table_id for subnet in vpc.public_subnets]), export_name="PublicRouteTableIds")
-        CfnOutput(self, "PrivateRouteTableIds", value=",".join([subnet.route_table.route_table_id for subnet in vpc.private_subnets]), export_name="PrivateRouteTableIds")
+        CfnOutput(self, "PublicRouteTableIds",
+                  value=",".join([subnet.route_table.route_table_id for subnet in vpc.public_subnets]),
+                  export_name="PublicRouteTableIds")
+        CfnOutput(self, "PrivateRouteTableIds",
+                  value=",".join([subnet.route_table.route_table_id for subnet in vpc.private_subnets]),
+                  export_name="PrivateRouteTableIds")

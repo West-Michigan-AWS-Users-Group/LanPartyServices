@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const folders = ["quake3"];
+    const folders = ["open_red_alert", "quake3", "ut99"];
     const folderList = document.getElementById("folder-list");
 
     folders.forEach(folder => {
