@@ -1,4 +1,4 @@
-from aws_cdk import (Aws, CfnOutput, Duration, RemovalPolicy, Stack, aws_certificatemanager as certificatemanager,
+from aws_cdk import (Aws, CfnOutput, Duration, RemovalPolicy, Size, Stack, Tags, aws_certificatemanager as certificatemanager,
                      aws_cloudfront as cloudfront, aws_cloudfront_origins as origins, aws_iam as iam,
                      aws_route53 as route53, aws_route53_targets as targets, aws_s3 as s3,
                      aws_s3_deployment as s3_deployment)
@@ -17,6 +17,9 @@ class info(Stack):
         :param domain_name:
         :param kwargs:
         """
+        app_group = self.__class__.__name__.capitalize()
+        app_group_l = app_group.lower()
+        Tags.of(self).add("service", app_group)
         zone = route53.HostedZone.from_lookup(self, "Zone", domain_name=domain_name)
         # Copyrighted material, binaries or other large files that cannot be otherwise stored publicly in git
         account_number = os.getenv("AWS_ACCOUNT_NUMBER")
@@ -149,17 +152,23 @@ function handler(event) {{
 
         asset_bucket = s3.Bucket.from_bucket_name(self, "AssetBucket",
                                                   asset_bucket_name)
-
-        for file_path, prefix in asset_file_paths:
-            zip_file_path = f"{file_path}.zip" if not file_path.endswith('.zip') else file_path
-            s3_deployment.BucketDeployment(self, f"Deploy{zip_file_path.replace('/', '_').replace('.', '_')}",
-                                           sources=[s3_deployment.Source.bucket(
-                                               bucket=asset_bucket,  # Use the bucket object here
-                                               zip_object_key=zip_file_path)],
-                                           destination_bucket=bucket,
-                                           destination_key_prefix=prefix,
-                                           distribution=distribution,
-                                           distribution_paths=[f"/{zip_file_path}"],
-                                           memory_limit=1024)
+        # Can't get this deployment to work. going to just upload manually.
+        # prod-lan-party-services-info | 12/20 | 3:54:37 PM | CREATE_FAILED        | Custom::CDKBucketDeployment
+        # | Deploytotal_annihiliation_total_annihilation__commander_pack_en_1_3_15733_pkg_zip/CustomResource-1024Mi
+        # B-6144MiB/Default (Deploytotalannihiliationtotalannihilationcommanderpacken1315733pkgzipCustomResource1024Mi
+        # B6144MiB91524526) Received response status [FAILED] from custom resource. Message returned: [Errno 28] No s
+        # pace left on device (RequestId: efd8e68d-8b09-44bf-9b4c-8199fcfc8ce8)
+        # for file_path, prefix in asset_file_paths:
+        #     zip_file_path = f"{file_path}.zip" if not file_path.endswith('.zip') else file_path
+        #     s3_deployment.BucketDeployment(self, f"Deploy{zip_file_path.replace('/', '_').replace('.', '_')}",
+        #                                    sources=[s3_deployment.Source.bucket(
+        #                                        bucket=asset_bucket,
+        #                                        zip_object_key=zip_file_path)],
+        #                                    destination_bucket=bucket,
+        #                                    destination_key_prefix=prefix,
+        #                                    distribution=distribution,
+        #                                    distribution_paths=[f"/{zip_file_path}"],
+        #                                    memory_limit=1024,
+        #                                    ephemeral_storage_size=Size.gibibytes(6))
 
         CfnOutput(self, "websiteUrl", value=f"https://{domain_name}")

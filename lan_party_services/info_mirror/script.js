@@ -1,6 +1,6 @@
 
 document.addEventListener("DOMContentLoaded", function() {
-    const folders = ['descent3', 'starcraft', 'ut2k4', 'ut99', 'tee_worlds', 'quake3', 'open_red_alert', 'total_annihiliation'];
+    const folders = ['descent3', 'starcraft', 'ut2k4', 'ut99', 'tee_worlds', 'quake3', 'open_red_alert', 'total_annihilation'];
     const folderList = document.getElementById("folder-list");
 
     folders.forEach(folder => {
