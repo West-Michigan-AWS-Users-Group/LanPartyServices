@@ -154,8 +154,8 @@ function handler(event) {{
                                                   asset_bucket_name)
         # Can't get this deployment to work. going to just upload manually.
         # prod-lan-party-services-info | 12/20 | 3:54:37 PM | CREATE_FAILED        | Custom::CDKBucketDeployment
-        # | Deploytotal_annihiliation_total_annihilation__commander_pack_en_1_3_15733_pkg_zip/CustomResource-1024Mi
-        # B-6144MiB/Default (Deploytotalannihiliationtotalannihilationcommanderpacken1315733pkgzipCustomResource1024Mi
+        # | Deploytotal_annihilation_total_annihilation__commander_pack_en_1_3_15733_pkg_zip/CustomResource-1024Mi
+        # B-6144MiB/Default (Deploytotalannihilationtotalannihilationcommanderpacken1315733pkgzipCustomResource1024Mi
         # B6144MiB91524526) Received response status [FAILED] from custom resource. Message returned: [Errno 28] No s
         # pace left on device (RequestId: efd8e68d-8b09-44bf-9b4c-8199fcfc8ce8)
         # for file_path, prefix in asset_file_paths:

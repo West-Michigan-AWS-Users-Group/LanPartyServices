@@ -12,7 +12,7 @@ Tested Game Modes/Mutators:
 - CTF Instagib
 - DM Rocket Arena
 
-See the source README in the aformenteioned link for more information on avaialble game modes and mutators.
+See the source README in the aforementioned link for more information on available game modes and mutators.
 
 ### Supported Platforms
 Windows, Mac, Linux
@@ -24,10 +24,10 @@ Unreal Tournament 99 was de-listed from Steam years ago, however you might have 
 of the game works just as fine as any other client versions provided by OldUnreal.
 
 #### Source
-Download the latest version of Unreal Tournament from the OldUnreal Github releases: https://github.com/OldUnreal/UnrealTournamentPatches/releases
+Download  latest version of Unreal Tournament from the [OldUnreal Github](https://github.com/OldUnreal/UnrealTournamentPatches/releases)
 
 
-Download the necessary files from the mirror site [here][Maps-Music-Sounds-Textures.zip](https://grlanparty.info/ut99/Maps-Music-Sounds-Textures.zip).
+Download the necessary files from the mirror site [here](https://grlanparty.info/ut99/Maps-Music-Sounds-Textures.zip).
 
 
 Follow the instructions [here](https://github.com/OldUnreal/UnrealTournamentPatches/blob/master/README.md) for your OS specific installation.
