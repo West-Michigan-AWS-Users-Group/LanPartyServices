@@ -4,7 +4,6 @@ This app contains:
 - Web front end for serving content for LAN attendees - Hosted on Cloudfront backed by S3. This app dynamically generates documentation from each app's readme.
 
 Game Servers:
-- Descent 3
 - Unreal Tournament 99 server (minus maps, music sounds and texture copyrighted material)
 - Unreal Tournament 2004 server
 - Quake 3 server (minus pak0.pk3 copyrighted material)
@@ -51,7 +50,7 @@ $ cdk deploy --all # or
 $ cdk deploy <stack-name> # prod-lan-party-services-info | prod-lan-party-services-core | prod-lan-party-services-quake3 | etc. See app.py for stack names
 ```
 
-6. Upload copyrighted/large assets to CDN bucket. These files are required for the game servers to run or for people to play.
+6. Upload copyrighted/large assets to CDN bucket. These files are required for the game servers to run or for people to play and should not be stored in git.
 ```bash
 python3 ./upload_assets.py
 ```
