@@ -148,7 +148,8 @@ function handler(event) {{
                                        sources=[s3_deployment.Source.asset("./lan_party_services/info_mirror")],
                                        destination_bucket=bucket,
                                        distribution=distribution,
-                                       distribution_paths=["/*"])
+                                       distribution_paths=["/*"],
+                                       retain_on_delete=True)
 
         asset_bucket = s3.Bucket.from_bucket_name(self, "AssetBucket",
                                                   asset_bucket_name)
