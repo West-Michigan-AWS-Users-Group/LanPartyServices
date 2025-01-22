@@ -13,5 +13,6 @@ Windows, Mac, Linux, BSD
 
 ### Installation
 Download and install the game from the official site instructions for your respective platform.
+
 https://www.openra.net/download/
 

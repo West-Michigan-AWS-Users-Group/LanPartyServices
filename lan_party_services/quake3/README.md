@@ -28,7 +28,9 @@ Server can be changed to any of the above modes by changing start CMD of the doc
 Windows, Mac, Linux
 
 ### Installation
-IOQuake3 is a free, standalone engine based on the Quake 3: Arena source code. 
 https://ioquake3.org/get-it/
+
+IOQuake3 is a free, standalone engine based on the Quake 3: Arena source code. 
+
 It requires a pak0.pak3 files from the original Quake 3: Arena game to play. Download here: [quake3/baseq3/pak0.pk3](https://grlanparty.info/quake3/baseq3/pak0.pk3)
 

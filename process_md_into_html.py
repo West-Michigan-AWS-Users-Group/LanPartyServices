@@ -52,20 +52,32 @@ def render_script_js(root_dir: str, script_path: str) -> None:
 
     # JavaScript code to be written to the script.js file
     js_code = f"""
-document.addEventListener("DOMContentLoaded", function() {{
-    const folders = {folders};
-    const folderList = document.getElementById("folder-list");
+    document.addEventListener("DOMContentLoaded", function() {{
+        const folders = {folders};
+        const folderList = document.getElementById("folder-list");
 
-    folders.forEach(folder => {{
-        const listItem = document.createElement("li");
-        const link = document.createElement("a");
-        link.href = `/${{folder}}/index.html`;
-        link.textContent = folder;
-        listItem.appendChild(link);
-        folderList.appendChild(listItem);
+        // Sort folders alphabetically
+        folders.sort((a, b) => a.localeCompare(b, undefined, {{ sensitivity: 'base' }}));
+
+        folders.forEach(folder => {{
+            const listItem = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = `/${{folder}}/index.html`;
+
+            // Replace underscores with spaces and capitalize each word, except for specific cases
+            let formattedName;
+            if (folder === 'UT2K4' || folder === 'UT99') {{
+                formattedName = folder;
+            }} else {{
+                formattedName = folder.replace(/_/g, ' ').replace(/\\b\\w/g, char => char.toUpperCase());
+            }}
+            link.textContent = formattedName;
+
+            listItem.appendChild(link);
+            folderList.appendChild(listItem);
+        }});
     }});
-}});
-"""
+    """
 
     # Write the JavaScript code to the script.js file
     with open(script_path, 'w', encoding='utf-8') as f:

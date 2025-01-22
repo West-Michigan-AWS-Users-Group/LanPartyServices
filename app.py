@@ -8,6 +8,7 @@ from lan_party_services.core.core import core
 from lan_party_services.info_mirror.info_mirror import info
 from lan_party_services.quake3.quake3 import quake3
 from lan_party_services.ut99.ut99 import ut99
+from lan_party_services.ut2k4.ut2k4 import ut2k4
 from lan_party_services.tee_worlds.teeworlds import teeworlds
 
 # Execute the process_md_into_html.py script
@@ -34,6 +35,7 @@ info(app, f"{environment}-{prefix}-info", env=env_us_east_1)
 core(app, f"{environment}-{prefix}-core", env=env_us_east_2)
 quake3(app, f"{environment}-{prefix}-quake3", env=env_us_east_2)
 ut99(app, f"{environment}-{prefix}-ut99", env=env_us_east_2)
+ut2k4(app, f"{environment}-{prefix}-ut2k4", env=env_us_east_2)
 teeworlds(app, f"{environment}-{prefix}-teeworlds", env=env_us_east_2)
 
 app.synth()
