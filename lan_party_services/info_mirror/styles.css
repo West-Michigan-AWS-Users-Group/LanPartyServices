@@ -1,10 +1,47 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f8f9fa;
-    color: #343a40;
-    text-align: center;
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.top-panels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.left-panel, .right-panel {
+    width: 45%;
+}
+
+.bottom-panel {
+    width: 100%;
+    text-align: left;
+}
+
+.photo {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.description {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+.discord-link, .signup-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #7289da;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.discord-link:hover, .signup-link:hover {
+    background-color: #5b6eae;
 }
 
 h1 {
@@ -36,4 +73,18 @@ a {
 
 a:hover {
     color: #333;
+}
+
+.event-details {
+    margin-top: 20px;
+    font-size: 1em;
+    line-height: 1.5;
+}
+
+.signup-link {
+    background-color: #28a745;
+}
+
+.signup-link:hover {
+    background-color: #218838;
 }
