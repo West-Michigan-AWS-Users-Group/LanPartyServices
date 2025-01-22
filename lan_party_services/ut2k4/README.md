@@ -2,7 +2,7 @@
 <a href="javascript:history.back()" style="text-decoration: none; color: black;">&#8592; Back</a>
 
 
-The next iteration of the legendary FPS Arena shooter, unreal tournament. 
+The next iteration of the legendary FPS Arena shooter, Unreal Tournament.
 
 **Server Url**: `ut2k4.grlanparty.info`
 
