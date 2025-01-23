@@ -92,14 +92,15 @@ class ut2k4(Stack):
                                  )
                              })
 
-        # Create a Fargate service with a sidecar container for health checks
+        # Create a Fargate task definition with shared memory and CPU resources
         task_definition = ecs.FargateTaskDefinition(self, f"{app_group}TaskDef",
-                                                    task_role=task_role)
+                                                    task_role=task_role,
+                                                    memory_limit_mib=1024,  # Total memory for the task
+                                                    cpu=512)  # Total CPU for the task
 
         # Sidecar container for health checks - uses busybox to respond to http requests
         health_check_container = task_definition.add_container("healthcheck",
                                                                image=ecs.ContainerImage.from_registry("busybox:latest"),
-                                                               memory_limit_mib=128,
                                                                essential=True,
                                                                command=["sh", "-c",
                                                                         "while true; do { echo -e 'HTTP/1.1 200 OK\r\n'; echo 'ok'; } | nc -l -p 8080; done"])
@@ -109,26 +110,8 @@ class ut2k4(Stack):
         # Main container
         main_container = task_definition.add_container(f"{app_group_l}-container",
                                                        image=ecs.ContainerImage.from_docker_image_asset(image),
-                                                       memory_limit_mib=256,
                                                        logging=ecs.LogDriver.aws_logs(stream_prefix=app_group,
-                                                                                      log_group=log_group),
-                                                       environment={
-                                                           "UT_SERVERURL": server_start_command,
-                                                           "UT_SERVERNAME": server_url,
-                                                           "UT_ADMINNAME": "",
-                                                           "UT_ADMINEMAIL": "",
-                                                           "UT_MOTD1": "Welcome to the GR LAN Party!",
-                                                           "UT_DOUPLINK": "true",
-                                                           "UT_ADMINPWD": "admin",
-                                                           "UT_GAMEPWD": "",
-                                                           "UT_WEBADMINUSER": "",
-                                                           "UT_WEBADMINPWD": "",
-                                                           "UT_MINPLAYERS_DM": "1",
-                                                           "UT_MINPLAYERS_CTF": "1",
-                                                           "UT_MAXPLAYERS": "16",
-                                                           "UT_INITIALBOTS_DM": "2",
-                                                           "UT_INITIALBOTS_CTF": "2"
-                                                       })
+                                                                                      log_group=log_group))
 
         # Create the Fargate service
         service = ecs.FargateService(self, f"{app_group}Service",
