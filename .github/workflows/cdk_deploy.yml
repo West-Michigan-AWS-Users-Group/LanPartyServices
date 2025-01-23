@@ -55,8 +55,8 @@ jobs:
       - name: CDK deploy
         run: |
           cdk deploy ${ENVIRONMENT}-lan-party-services-info --require-approval=never --region us-east-1
-          cdk deploy ${ENVIRONMENT}-lan-party-services-core --require-approval=never --region us-east-2
-          cdk deploy ${ENVIRONMENT}-lan-party-services-quake3 --require-approval=never --region us-east-2
-          cdk deploy ${ENVIRONMENT}-lan-party-services-ut99 --require-approval=never --region us-east-2
-          cdk deploy ${ENVIRONMENT}-lan-party-services-ut2k4 --require-approval=never --region us-east-2
-          cdk deploy ${ENVIRONMENT}-lan-party-services-teeworlds --require-approval=never --region us-east-2
+          # cdk deploy ${ENVIRONMENT}-lan-party-services-core --require-approval=never --region us-east-2
+          # cdk deploy ${ENVIRONMENT}-lan-party-services-quake3 --require-approval=never --region us-east-2
+          # cdk deploy ${ENVIRONMENT}-lan-party-services-ut99 --require-approval=never --region us-east-2
+          # cdk deploy ${ENVIRONMENT}-lan-party-services-ut2k4 --require-approval=never --region us-east-2
+          # cdk deploy ${ENVIRONMENT}-lan-party-services-teeworlds --require-approval=never --region us-east-2

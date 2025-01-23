@@ -105,7 +105,8 @@ function handler(event) {{
                                                    cloudfront.ErrorResponse(
                                                        http_status=403,
                                                        response_http_status=403,
-                                                       response_page_path="site/error.html",
+                                                       response_page_path="/site/error.html",
+                                                       # Ensure the path starts with a '/'
                                                        ttl=Duration.minutes(30)
                                                    )
                                                ],
