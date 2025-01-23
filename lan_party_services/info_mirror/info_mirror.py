@@ -62,7 +62,7 @@ function handler(event) {{
             statusDescription: "Moved Permanently",
             headers: {{
                 location: {{
-                    value: "https://{domain_name}/index.html" + request.uri
+                    value: "https://{domain_name}/index.html"
                 }}
             }}
         }};
