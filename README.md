@@ -1,7 +1,9 @@
-# CDK app to deploy and run a number of video game servers for a LAN party
+# LAN Party Services
+AWS CDK app to deploy and run a web server and number of video game servers for a LAN party.
 
 This app contains:
-- Web front end for serving content for LAN attendees - Hosted on Cloudfront backed by S3. This app dynamically generates documentation from each app's readme.
+- Web front end for serving content for LAN attendees - Hosted on Cloudfront backed by S3. 
+This app dynamically generates documentation from each app's readme file for simple templated renderings of info pages.
 
 Game Servers:
 - Unreal Tournament 99 server (minus maps, music sounds and texture copyrighted material)
@@ -13,8 +15,9 @@ Game Servers:
 Game Files/Info:
 - Starcraft: Brood War
 - Total Annihilation
+- Warhammer 40k: Speed Freeks
 
-Requirements:
+## Requirements
 - AWS Account + Profile configured
 - Python venv
 - CDK bootstrapped environment
