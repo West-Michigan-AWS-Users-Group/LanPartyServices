@@ -1,0 +1,84 @@
+name: CDK Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      stack:
+        description: 'Select the stack to deploy'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - info
+          - core
+          - quake3
+          - ut99
+          - ut2k4
+          - teeworlds
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install Python dependencies and CDK
+        run: |
+          npm install -g aws-cdk
+          python -m pip install --use-feature=fast-deps --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-access-key-id: ${{ secrets.SA_CDK_DEPLOYUSER_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.SA_CDK_DEPLOYUSER_AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-west-2"
+
+      - name: Set environment variables
+        run: |
+          if [ "$GITHUB_REF" == "refs/heads/develop" ]; then
+            ENVIRONMENT="dev"
+          elif [ "$GITHUB_REF" == "refs/heads/main" ]; then
+            ENVIRONMENT="prod"
+          else
+            echo "Skipping workflow for branch $GITHUB_REF"
+            exit 0
+          fi
+          echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+          echo "AWS_ACCOUNT_NUMBER=${{ secrets.AWS_ACCOUNT_NUMBER }}" >> $GITHUB_ENV
+
+      - name: CDK synth
+        run: cdk synth --require-approval=never
+
+      - name: CDK deploy
+        run: |
+          if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "info" ]; then
+            cdk deploy ${ENVIRONMENT}-lan-party-services-info --require-approval=never --region us-east-1
+          fi
+          if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "core" ]; then
+            cdk deploy ${ENVIRONMENT}-lan-party-services-core --require-approval=never --region us-east-2
+          fi
+          if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "quake3" ]; then
+            cdk deploy ${ENVIRONMENT}-lan-party-services-quake3 --require-approval=never --region us-east-2
+          fi
+          if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "ut99" ]; then
+            cdk deploy ${ENVIRONMENT}-lan-party-services-ut99 --require-approval=never --region us-east-2
+          fi
+          if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "ut2k4" ]; then
+            cdk deploy ${ENVIRONMENT}-lan-party-services-ut2k4 --require-approval=never --region us-east-2
+          fi
+          if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "teeworlds" ]; then
+            cdk deploy ${ENVIRONMENT}-lan-party-services-teeworlds --require-approval=never --region us-east-2
