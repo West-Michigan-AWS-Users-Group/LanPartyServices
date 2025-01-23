@@ -56,7 +56,12 @@ class ut2k4(Stack):
         # Server start command
         server_start_command = ctf_facing_worlds_instagib_low_grav
         # Networking
-        app_ports = [7777, 7778, 7787, 28902]
+        app_ports = [
+            {"port": 7777, "protocol": ecs.Protocol.UDP},
+            {"port": 7778, "protocol": ecs.Protocol.UDP},
+            {"port": 7787, "protocol": ecs.Protocol.UDP},
+            {"port": 28902, "protocol": ecs.Protocol.TCP}
+        ]
         health_check_port = 8080
         server_url = f"{app_group_l}.grlanparty.info"
         # Image
@@ -84,8 +89,8 @@ class ut2k4(Stack):
         # Create a Fargate task definition with shared memory and CPU resources
         task_definition = ecs.FargateTaskDefinition(self, f"{app_group}TaskDef",
                                                     task_role=task_role,
-                                                    memory_limit_mib=1024,  # Total memory for the task
-                                                    cpu=512)  # Total CPU for the task
+                                                    memory_limit_mib=1024,
+                                                    cpu=512)
 
         # Sidecar container for health checks - uses busybox to respond to http requests
         health_check_container = task_definition.add_container("healthcheck",
@@ -110,31 +115,36 @@ class ut2k4(Stack):
                                      task_definition=task_definition,
                                      desired_count=1,
                                      security_groups=[nlb_tg_security_group])
+        # Add port mappings
         for app_port in app_ports:
-            main_container.add_port_mappings(ecs.PortMapping(container_port=app_port, protocol=ecs.Protocol.UDP))
+            main_container.add_port_mappings(
+                ecs.PortMapping(container_port=app_port["port"], protocol=app_port["protocol"]))
 
             # Add SG rules to NLB in core stack
-            nlb_tg_security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.udp(app_port),
-                                                   f"Allow UDP traffic on {app_port}")
+            nlb_tg_security_group.add_ingress_rule(ec2.Peer.any_ipv4(),
+                                                   ec2.Port(app_port["protocol"], app_port["port"]),
+                                                   f"Allow {app_port['protocol'].name} traffic on {app_port['port']}")
 
-            # Add udp listener
-            udp_listener = nlb.add_listener(f"UDPListener{app_port}", port=app_port, protocol=elbv2.Protocol.UDP)
-            udp_listener.add_targets(f"FargateServiceTargetUDP{app_port}",
-                                     port=app_port,
-                                     protocol=elbv2.Protocol.UDP,
-                                     targets=[service.load_balancer_target(
-                                         container_name=f"{app_group_l}-container",
-                                         container_port=app_port,
-                                         protocol=ecs.Protocol.UDP
-                                     )],
-                                     health_check=elbv2.HealthCheck(
-                                         interval=Duration.seconds(15),
-                                         timeout=Duration.seconds(10),
-                                         healthy_threshold_count=2,
-                                         unhealthy_threshold_count=2,
-                                         port=str(health_check_port),
-                                         protocol=elbv2.Protocol.TCP),
-                                     deregistration_delay=Duration.seconds(0))
+            # Add listener
+            listener_protocol = elbv2.Protocol.UDP if app_port["protocol"] == ecs.Protocol.UDP else elbv2.Protocol.TCP
+            listener = nlb.add_listener(f"Listener{app_port['port']}", port=app_port["port"],
+                                        protocol=listener_protocol)
+            listener.add_targets(f"FargateServiceTarget{app_port['port']}",
+                                 port=app_port["port"],
+                                 protocol=listener_protocol,
+                                 targets=[service.load_balancer_target(
+                                     container_name=f"{app_group_l}-container",
+                                     container_port=app_port["port"],
+                                     protocol=app_port["protocol"]
+                                 )],
+                                 health_check=elbv2.HealthCheck(
+                                     interval=Duration.seconds(15),
+                                     timeout=Duration.seconds(10),
+                                     healthy_threshold_count=2,
+                                     unhealthy_threshold_count=2,
+                                     port=str(health_check_port),
+                                     protocol=elbv2.Protocol.TCP),
+                                 deregistration_delay=Duration.seconds(0))
 
         # Add health check port to the security group
         nlb_tg_security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(health_check_port),
