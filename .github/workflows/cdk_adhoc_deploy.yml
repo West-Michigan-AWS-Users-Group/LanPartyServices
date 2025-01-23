@@ -1,4 +1,4 @@
-name: ${{ github.event.inputs.stack }} Deploy
+name: CDK Adhoc Deploy
 
 on:
   workflow_dispatch:
