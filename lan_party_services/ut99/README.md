@@ -27,7 +27,7 @@ of the game works just as fine as any other client versions provided by OldUnrea
 Download  latest version of Unreal Tournament from the [OldUnreal Github](https://github.com/OldUnreal/UnrealTournamentPatches/releases)
 
 
-Download the necessary files from the mirror site [here](https://grlanparty.info/assets/ut99/Maps-Music-Sounds-Textures.zip).
+Download the necessary files from the mirror site [here](https://grlanparty.info/assets/Maps-Music-Sounds-Textures.zip).
 
 
 Follow the instructions [here](https://github.com/OldUnreal/UnrealTournamentPatches/blob/master/README.md) for your OS specific installation.

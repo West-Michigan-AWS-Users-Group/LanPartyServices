@@ -28,9 +28,14 @@ Server can be changed to any of the above modes by changing start CMD of the doc
 Windows, Mac, Linux
 
 ### Installation
+
+#### IO Quake3
+IOQuake3 is a free, standalone engine based on the Quake 3: Arena source code. It requires a pak0.pak3 files from the original Quake game to play.
+
 https://ioquake3.org/get-it/
 
-IOQuake3 is a free, standalone engine based on the Quake 3: Arena source code. 
+Download pak0.pk3 [here](https://grlanparty.info/assets/pak0.pk3) and place into your `quake3/baseq3/pak0.pk3` path.
 
-It requires a pak0.pak3 files from the original Quake 3: Arena game to play. Download here: [quake3/baseq3/pak0.pk3](https://grlanparty.info/assets/quake3/baseq3/pak0.pk3)
-
+#### Steam
+Quake 3 is also available on [Steam](https://store.steampowered.com/app/2200/Quake_III_Arena/). The Steam client works
+just as fine as any other client versions provided by IoQuake3. 
