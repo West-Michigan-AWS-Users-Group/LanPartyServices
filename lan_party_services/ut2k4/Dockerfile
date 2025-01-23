@@ -1,19 +1,24 @@
 # https://github.com/alicecantsleep/new-ut2004-docker
 FROM deathbydentures/ut2k4:beta6
 
-COPY UT2004.ini /usr/src/ut2004/System/UT2004.ini
+RUN mkdir /ini
+COPY UT2004.ini /ini/UT2004.ini
+RUN chmod 777 /ini/UT2004.ini
 COPY entrypoint.sh /entrypoint.sh
 
+# Run bash
+# CMD ["/bin/bash"]
+
 # Regular deathmatch
-CMD ["ucc-bin", "server", "DM-Morpheus3?game=XGame.xDeathMatch", "ini=UT2004.ini", "-nohomedir", "-lanplay"]
+#CMD ["ucc-bin", "server", "DM-Morpheus3?game=XGame.xDeathMatch", "ini=UT2004.ini", "-nohomedir", "-lanplay"]
 
 # Mutant game mode (what is this?
 # CMD ["ucc-bin", "server", "DM-Deck17?game=BonusPack.xMutantGame", "ini=UT2004.ini", "-nohomedir", "-lanplay"]
 
 # TDM Facing worlds classic
-# CMD ["ucc-bin", "server", "CTF-FaceClassic?game=XGame.xCTFGame", "ini=UT2004.ini", "-nohomedir", "-lanplay"]
+#CMD ["ucc-bin", "server", "CTF-FaceClassic?game=XGame.xCTFGame", "ini=UT2004.ini", "-nohomedir", "-lanplay"]
 # with mutators
-#CMD ["ucc-bin", "server", "CTF-FaceClassic?game=XGame.xCTFGame?mutator=XGame.MMutInstaGib,UnrealGame.MutLowGrav", "ini=UT2004.ini", "-nohomedir", "-lanplay"]
+CMD ["ucc-bin", "server", "CTF-FaceClassic?game=XGame.xCTFGame?mutator=XGame.MMutInstaGib,UnrealGame.MutLowGrav", "ini=UT2004.ini", "-nohomedir", "-lanplay"]
 
 # bombing run
 # CMD ["ucc-bin", "server", "BR-Serenity?game=XGame.xBombingRun", "ini=UT2004.ini", "-nohomedir", "-lanplay"]
