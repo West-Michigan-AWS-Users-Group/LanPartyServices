@@ -6,13 +6,14 @@ This app contains:
 This app dynamically generates documentation from each app's readme file for simple templated renderings of info pages.
 
 Game Servers:
-- Unreal Tournament 99 server (minus maps, music sounds and texture copyrighted material)
-- Unreal Tournament 2004 server
+- Open-RA server
 - Quake 3 server (minus pak0.pk3 copyrighted material)
 - Tee-worlds server
-- Open-RA server
+- Unreal Tournament 2004 server
+- Unreal Tournament 99 server (minus maps, music sounds and texture copyrighted material)
 
 Game Files/Info:
+- Beyond All Reason (BAR)
 - Starcraft: Brood War
 - Total Annihilation
 - Warhammer 40k: Speed Freeks
