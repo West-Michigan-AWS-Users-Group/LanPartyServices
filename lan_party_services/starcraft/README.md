@@ -1,7 +1,7 @@
 # Starcraft: Brood War
 <a href="javascript:history.back()" style="text-decoration: none; color: black;">&#8592; Back</a>
 
-![Starcraft: Brood War](https://www.dvcinquirer.com/af/2017/04/19/starcraft-brood-war-resurfaces/)
+![Starcraft: Brood War](https://upload.wikimedia.org/wikipedia/en/8/89/Brood_War_box_art_%28StarCraft%29.jpg)
 
 Iconic RTS - needs no introduction.
 
