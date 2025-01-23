@@ -51,21 +51,10 @@ class ut2k4(Stack):
         #     Documentation: https://github.com/LacledesLAN/gamesvr-ut2004/blob/master/Documentation/ServerSetup.md
         #     Key note, there are game modes and build-in mutators. This below list hasn't been validated completely
         # Game modes and mutators for UT2004
-        instagib_ctf_face = "CTF-Face?game=XGame.xCTFGame?mutator=XGame.MutInstaGib"
-        ffa_vanilla = "DM-Deck16?game=XGame.xDeathMatch"
-        ffa_rocket_arena = "DM-Deck16][?game=XGame.xDeathMatch?mutator=BotPack.RocketArena"
-        assault = "AS-MotherShip?game=UT2K4Assault.ASGameInfo"
-        bombing_run = "BR-Serenity?game=XGame.xBombingRun"
-        double_domination = "DOM-Suntemple?game=XGame.xDoubleDom"
-        invasion = "DM-Antalus?game=SkaarjPack.Invasion"
-        last_man_standing = "DM-Morpheus3?game=BonusPack.xLastManStandingGame"
-        mutant = "DM-Deck17?game=BonusPack.xMutantGame"
-        onslaught = "ONS-Torlan?game=Onslaught.ONSOnslaughtGame"
-        team_deathmatch = "DM-Rankin?game=XGame.xTeamGame"
-        vehicle_ctf = "CTF-Citadel?game=XGame.xVehicleCTFGame"
+        ctf_facing_worlds_instagib_low_grav = "CTF-FaceClassic?game=XGame.xCTFGame?mutator=XGame.MMutInstaGib,UnrealGame.MutLowGrav"
 
         # Server start command
-        server_start_command = ffa_rocket_arena
+        server_start_command = ctf_facing_worlds_instagib_low_grav
         # Networking
         app_ports = [7777, 7778, 7787, 28902]
         health_check_port = 8080
@@ -108,10 +97,12 @@ class ut2k4(Stack):
             ecs.PortMapping(container_port=health_check_port, protocol=ecs.Protocol.TCP))
 
         # Main container
-        main_container = task_definition.add_container(f"{app_group_l}-container",
-                                                       image=ecs.ContainerImage.from_docker_image_asset(image),
-                                                       logging=ecs.LogDriver.aws_logs(stream_prefix=app_group,
-                                                                                      log_group=log_group))
+        main_container = task_definition.add_container(
+            f"{app_group_l}-container",
+            image=ecs.ContainerImage.from_docker_image_asset(image),
+            logging=ecs.LogDriver.aws_logs(stream_prefix=app_group, log_group=log_group),
+            command=["ucc-bin", "server", server_start_command, "ini=UT2004.ini", "-nohomedir", "-lanplay"]
+        )
 
         # Create the Fargate service
         service = ecs.FargateService(self, f"{app_group}Service",

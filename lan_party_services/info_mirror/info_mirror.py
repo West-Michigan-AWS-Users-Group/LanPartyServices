@@ -98,14 +98,14 @@ function handler(event) {{
 
         distribution = cloudfront.Distribution(self, "distribution",
                                        certificate=certificate,
-                                       default_root_object="site/index.html",
+                                       default_root_object="/site/index.html",
                                        domain_names=[domain_name, f"www.{domain_name}"],
                                        minimum_protocol_version=cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
                                        error_responses=[
                                            cloudfront.ErrorResponse(
                                                http_status=403,
                                                response_http_status=403,
-                                               response_page_path="site/error.html",
+                                               response_page_path="/site/error.html",
                                                ttl=Duration.minutes(30)
                                            )
                                        ],
