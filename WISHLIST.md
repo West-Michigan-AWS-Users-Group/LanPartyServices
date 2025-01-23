@@ -9,3 +9,5 @@ List of games or ports that I would like to see in this project:
 - Minecraft - Add EFS support and investigate popular mods. Challenge series for LAN party maybe?
 - Quake I Team Fortress mod
 - TF2 dedicated server
+- PubG - fun team game
+- BAR - spiritual successor to Total Annihilation/Supreme Commander
