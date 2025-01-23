@@ -9,7 +9,7 @@
         folders.forEach(folder => {
             const listItem = document.createElement("li");
             const link = document.createElement("a");
-            link.href = `/site/${folder}/index.html`;
+            link.href = `/${folder}/index.html`;
 
             // Replace underscores with spaces and capitalize each word, except for specific cases
             let formattedName;

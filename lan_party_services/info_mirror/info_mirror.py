@@ -62,7 +62,7 @@ function handler(event) {{
             statusDescription: "Moved Permanently",
             headers: {{
                 location: {{
-                    value: "https://{domain_name}/site/index.html" + request.uri
+                    value: "https://{domain_name}/index.html" + request.uri
                 }}
             }}
         }};
@@ -98,14 +98,14 @@ function handler(event) {{
 
         distribution = cloudfront.Distribution(self, "distribution",
                                        certificate=certificate,
-                                       default_root_object="/site/index.html",
+                                       default_root_object="/index.html",
                                        domain_names=[domain_name, f"www.{domain_name}"],
                                        minimum_protocol_version=cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
                                        error_responses=[
                                            cloudfront.ErrorResponse(
                                                http_status=403,
                                                response_http_status=403,
-                                               response_page_path="/site/error.html",
+                                               response_page_path="/error.html",
                                                ttl=Duration.minutes(30)
                                            )
                                        ],
@@ -159,7 +159,7 @@ function handler(event) {{
         s3_deployment.BucketDeployment(self, "DeployWebsite",
                                        sources=[s3_deployment.Source.asset("./lan_party_services/info_mirror/site")],
                                        destination_bucket=bucket,
-                                       destination_key_prefix="site/",
+                                       destination_key_prefix="/",
                                        distribution=distribution,
                                        distribution_paths=["/*"],
                                        retain_on_delete=True)
