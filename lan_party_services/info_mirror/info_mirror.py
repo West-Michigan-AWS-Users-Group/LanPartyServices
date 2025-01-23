@@ -62,7 +62,7 @@ function handler(event) {{
             statusDescription: "Moved Permanently",
             headers: {{
                 location: {{
-                    value: "https://{domain_name}" + request.uri
+                    value: "https://{domain_name}/site/index.html" + request.uri
                 }}
             }}
         }};
@@ -96,53 +96,62 @@ function handler(event) {{
 
         s3_origin = origins.S3Origin(bucket, origin_access_identity=cloudfront_oai)
 
+        bucket.add_to_resource_policy(
+            iam.PolicyStatement(
+                actions=["s3:ListBucket"],
+                resources=[bucket.bucket_arn],
+                principals=[iam.AnyPrincipal()],
+                effect=iam.Effect.DENY
+            )
+        )
+
         distribution = cloudfront.Distribution(self, "distribution",
-                                               certificate=certificate,
-                                               default_root_object="",
-                                               domain_names=[domain_name, f"www.{domain_name}"],
-                                               minimum_protocol_version=cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
-                                               error_responses=[
-                                                   cloudfront.ErrorResponse(
-                                                       http_status=403,
-                                                       response_http_status=403,
-                                                       response_page_path="/site/error.html",
-                                                       ttl=Duration.minutes(30)
+                                       certificate=certificate,
+                                       default_root_object="index.html",
+                                       domain_names=[domain_name, f"www.{domain_name}"],
+                                       minimum_protocol_version=cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
+                                       error_responses=[
+                                           cloudfront.ErrorResponse(
+                                               http_status=403,
+                                               response_http_status=403,
+                                               response_page_path="/site/error.html",
+                                               ttl=Duration.minutes(30)
+                                           )
+                                       ],
+                                       default_behavior=cloudfront.BehaviorOptions(
+                                           origin=s3_origin,
+                                           compress=True,
+                                           function_associations=[
+                                               cloudfront.FunctionAssociation(
+                                                   function=redirect_function,
+                                                   event_type=cloudfront.FunctionEventType.VIEWER_REQUEST
+                                               )
+                                           ],
+                                           origin_request_policy=cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
+                                           viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                                           allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+                                           cached_methods=cloudfront.CachedMethods.CACHE_GET_HEAD,
+                                           cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+                                           response_headers_policy=my_response_headers_policy_website
+                                       ),
+                                       additional_behaviors={
+                                           "site/*": cloudfront.BehaviorOptions(
+                                               origin=s3_origin,
+                                               compress=True,
+                                               function_associations=[
+                                                   cloudfront.FunctionAssociation(
+                                                       function=redirect_function,
+                                                       event_type=cloudfront.FunctionEventType.VIEWER_REQUEST
                                                    )
                                                ],
-                                               default_behavior=cloudfront.BehaviorOptions(
-                                                   origin=s3_origin,
-                                                   compress=True,
-                                                   function_associations=[
-                                                       cloudfront.FunctionAssociation(
-                                                           function=redirect_function,
-                                                           event_type=cloudfront.FunctionEventType.VIEWER_REQUEST
-                                                       )
-                                                   ],
-                                                   origin_request_policy=cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
-                                                   viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                                                   allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-                                                   cached_methods=cloudfront.CachedMethods.CACHE_GET_HEAD,
-                                                   cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
-                                                   response_headers_policy=my_response_headers_policy_website
-                                               ),
-                                               additional_behaviors={
-                                                   "site/*": cloudfront.BehaviorOptions(
-                                                       origin=s3_origin,
-                                                       compress=True,
-                                                       function_associations=[
-                                                           cloudfront.FunctionAssociation(
-                                                               function=redirect_function,
-                                                               event_type=cloudfront.FunctionEventType.VIEWER_REQUEST
-                                                           )
-                                                       ],
-                                                       origin_request_policy=cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
-                                                       viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                                                       allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-                                                       cached_methods=cloudfront.CachedMethods.CACHE_GET_HEAD,
-                                                       cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
-                                                       response_headers_policy=my_response_headers_policy_website
-                                                   )
-                                               })
+                                               origin_request_policy=cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
+                                               viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                                               allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+                                               cached_methods=cloudfront.CachedMethods.CACHE_GET_HEAD,
+                                               cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+                                               response_headers_policy=my_response_headers_policy_website
+                                           )
+                                       })
 
         route53.ARecord(self, "SiteAliasRecord",
                         record_name=domain_name,
