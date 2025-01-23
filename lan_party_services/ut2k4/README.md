@@ -1,7 +1,6 @@
 # Unreal Tournament 2004
 <a href="javascript:history.back()" style="text-decoration: none; color: black;">&#8592; Back</a>
 
-
 The next iteration of the legendary FPS Arena shooter, Unreal Tournament.
 
 **Server Url**: `ut2k4.grlanparty.info`
@@ -9,7 +8,7 @@ The next iteration of the legendary FPS Arena shooter, Unreal Tournament.
 This server has a number of mutators configured and is based off of [this container](https://github.com/LacledesLAN/gamesvr-ut2004). 
 
 ### Supported Platforms
-Windows Mac (Through Whiskey)
+![Windows](https://img.icons8.com/color/48/000000/windows-10.png) ![Mac](https://img.icons8.com/color/48/000000/mac-os.png)
 
 ### Installation
 
@@ -31,5 +30,4 @@ Note: This game is not natively supported on Mac M1. You will need to use Whiske
 #### Windows
 - Download the UT2k4 installer [here](https://archive.org/details/ut2004-3369).
 
-- Launch the 64 bit version of the game. 
-
+- Launch the 64 bit version of the game.

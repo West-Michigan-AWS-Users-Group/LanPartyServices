@@ -25,7 +25,7 @@ This container has the following modes:
 Server can be changed to any of the above modes by changing start CMD of the docker container. 
 
 ### Supported Platforms
-Windows, Mac, Linux
+![Windows](https://img.icons8.com/color/48/000000/windows-10.png) ![Mac](https://img.icons8.com/color/48/000000/mac-os.png) ![Linux](https://img.icons8.com/color/48/000000/linux.png)
 
 ### Installation
 

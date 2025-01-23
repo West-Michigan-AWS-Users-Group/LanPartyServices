@@ -6,7 +6,7 @@ Robot wars RTS game.
 
 
 ### Supported Platforms
-Windows, Mac
+![Windows](https://img.icons8.com/color/48/000000/windows-10.png) ![Mac](https://img.icons8.com/color/48/000000/mac-os.png)
 
 
 ### Installation
