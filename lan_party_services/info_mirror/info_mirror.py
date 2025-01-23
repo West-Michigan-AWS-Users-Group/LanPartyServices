@@ -98,14 +98,14 @@ function handler(event) {{
 
         distribution = cloudfront.Distribution(self, "distribution",
                                        certificate=certificate,
-                                       default_root_object="index.html",
+                                       default_root_object="/index.html",
                                        domain_names=[domain_name, f"www.{domain_name}"],
                                        minimum_protocol_version=cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
                                        error_responses=[
                                            cloudfront.ErrorResponse(
                                                http_status=403,
                                                response_http_status=403,
-                                               response_page_path="error.html",
+                                               response_page_path="/error.html",
                                                ttl=Duration.minutes(30)
                                            )
                                        ],
@@ -162,7 +162,8 @@ function handler(event) {{
                                        destination_key_prefix="/",
                                        distribution=distribution,
                                        distribution_paths=["/*"],
-                                       retain_on_delete=True)
+                                       retain_on_delete=True,
+                                       prune=False)
 
         asset_bucket = s3.Bucket.from_bucket_name(self, "AssetBucket",
                                                   asset_bucket_name)
