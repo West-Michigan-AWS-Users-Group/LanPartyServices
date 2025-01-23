@@ -1,14 +1,17 @@
 # Unreal Tournament 2004
 <a href="javascript:history.back()" style="text-decoration: none; color: black;">&#8592; Back</a>
 
-The next iteration of the legendary FPS Arena shooter, Unreal Tournament.
+![Unreal Tournament 2004](https://shared.steamstatic.com/store_item_assets/steam/apps/13230/header.jpg?t=1671033925)
 
-**Server Url**: `ut2k4.grlanparty.info`
-
-This server has a number of mutators configured and is based off of [this container](https://github.com/LacledesLAN/gamesvr-ut2004). 
+The next iteration of the legendary FPS Arena shooter, Unreal Tournament, adding new weapons, vehicles, and game modes.
 
 ### Supported Platforms
 ![Windows](https://img.icons8.com/color/48/000000/windows-10.png) ![Mac](https://img.icons8.com/color/48/000000/mac-os.png)
+
+### Server Info
+`ut2k4.grlanparty.info`
+
+This server has a number of mutators configured and is based off of [this container](https://github.com/LacledesLAN/gamesvr-ut2004). 
 
 ### Installation
 

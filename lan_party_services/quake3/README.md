@@ -1,10 +1,17 @@
 # Quake 3
 <a href="javascript:history.back()" style="text-decoration: none; color: black;">&#8592; Back</a>
 
+![Quake 3: Arena](https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2200/header.jpg?t=1664229254)
 
-Arena FPS game. This server is using the [lacledeslan/gamesvr-ioquake3](https://github.com/LacledesLAN/gamesvr-ioquake3) Docker image.
+Arena FPS game.
 
-**Server Url**: `quake3.grlanparty.info`
+### Supported Platforms
+![Windows](https://img.icons8.com/color/48/000000/windows-10.png) ![Mac](https://img.icons8.com/color/48/000000/mac-os.png) ![Linux](https://img.icons8.com/color/48/000000/linux.png)
+
+### Server Info
+`quake3.grlanparty.info`
+
+This server is using the [lacledeslan/gamesvr-ioquake3](https://github.com/LacledesLAN/gamesvr-ioquake3) Docker image.
 
 This container has the following modes:
 
@@ -22,15 +29,12 @@ This container has the following modes:
 **Other:**
 - Free Tag Team Deathmatch
 
-Server can be changed to any of the above modes by changing start CMD of the docker container. 
-
-### Supported Platforms
-![Windows](https://img.icons8.com/color/48/000000/windows-10.png) ![Mac](https://img.icons8.com/color/48/000000/mac-os.png) ![Linux](https://img.icons8.com/color/48/000000/linux.png)
+Server can be changed to any of the above modes by changing start CMD of the docker container.
 
 ### Installation
 
 #### IO Quake3
-IOQuake3 is a free, standalone engine based on the Quake 3: Arena source code. It requires a pak0.pak3 files from the original Quake game to play.
+IOQuake3 is a free, standalone engine based on the Quake 3: Arena source code. It requires a pak0.pak3 files from the original Quake game to play and is supported on all platforms.
 
 https://ioquake3.org/get-it/
 
