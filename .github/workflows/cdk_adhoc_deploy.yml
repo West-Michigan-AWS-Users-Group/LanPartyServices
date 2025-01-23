@@ -1,4 +1,4 @@
-name: CDK Deploy
+name: CDK Adhoc Deploy
 
 on:
   workflow_dispatch:
