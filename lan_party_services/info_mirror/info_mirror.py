@@ -107,14 +107,14 @@ function handler(event) {{
 
         distribution = cloudfront.Distribution(self, "distribution",
                                        certificate=certificate,
-                                       default_root_object="index.html",
+                                       default_root_object="site/index.html",
                                        domain_names=[domain_name, f"www.{domain_name}"],
                                        minimum_protocol_version=cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
                                        error_responses=[
                                            cloudfront.ErrorResponse(
                                                http_status=403,
                                                response_http_status=403,
-                                               response_page_path="/site/error.html",
+                                               response_page_path="site/error.html",
                                                ttl=Duration.minutes(30)
                                            )
                                        ],
@@ -134,24 +134,25 @@ function handler(event) {{
                                            cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
                                            response_headers_policy=my_response_headers_policy_website
                                        ),
-                                       additional_behaviors={
-                                           "site/*": cloudfront.BehaviorOptions(
-                                               origin=s3_origin,
-                                               compress=True,
-                                               function_associations=[
-                                                   cloudfront.FunctionAssociation(
-                                                       function=redirect_function,
-                                                       event_type=cloudfront.FunctionEventType.VIEWER_REQUEST
-                                                   )
-                                               ],
-                                               origin_request_policy=cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
-                                               viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                                               allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-                                               cached_methods=cloudfront.CachedMethods.CACHE_GET_HEAD,
-                                               cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
-                                               response_headers_policy=my_response_headers_policy_website
-                                           )
-                                       })
+                                       # additional_behaviors={
+                                       #     "site/*": cloudfront.BehaviorOptions(
+                                       #         origin=s3_origin,
+                                       #         compress=True,
+                                       #         function_associations=[
+                                       #             cloudfront.FunctionAssociation(
+                                       #                 function=redirect_function,
+                                       #                 event_type=cloudfront.FunctionEventType.VIEWER_REQUEST
+                                       #             )
+                                       #         ],
+                                       #         origin_request_policy=cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
+                                       #         viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                                       #         allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+                                       #         cached_methods=cloudfront.CachedMethods.CACHE_GET_HEAD,
+                                       #         cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+                                       #         response_headers_policy=my_response_headers_policy_website
+                                       #     )
+                                       # }
+                                       )
 
         route53.ARecord(self, "SiteAliasRecord",
                         record_name=domain_name,
