@@ -12,10 +12,10 @@ Open source port of Command and Conquer: Red Alert and classic Westwood RTS engi
 ### Server Info
 `openra.grlanparty.info`
 
-Running the following docker container: https://github.com/OpenRA/OpenRA/wiki/Dedicated-Server
+Running in [this](https://github.com/OpenRA/OpenRA/wiki/Dedicated-Server) docker container image.
 
 ### Installation
-Download and install the game from the official site instructions for your respective platform.
+Download and install the game from the [official site](https://www.openra.net/download/). Follow the instructions for your respective platform.
 
-https://www.openra.net/download/
+
 

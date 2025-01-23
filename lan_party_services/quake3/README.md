@@ -11,8 +11,6 @@ Arena FPS game.
 ### Server Info
 `quake3.grlanparty.info`
 
-This server is using the [lacledeslan/gamesvr-ioquake3](https://github.com/LacledesLAN/gamesvr-ioquake3) Docker image.
-
 This container has the following modes:
 
 **Vanilla:**
@@ -27,16 +25,16 @@ This container has the following modes:
 - CTF
 
 **Other:**
-- Free Tag Team Deathmatch
-
-Server can be changed to any of the above modes by changing start CMD of the docker container.
+- Freeze Tag Team Deathmatch
 
 ### Installation
 
 #### IO Quake3
-IOQuake3 is a free, standalone engine based on the Quake 3: Arena source code. It requires a pak0.pak3 files from the original Quake game to play and is supported on all platforms.
+IOQuake3 is a free, standalone engine based on the Quake 3: Arena source code and has a client for all platforms.
 
-https://ioquake3.org/get-it/
+Download [here](https://ioquake3.org/get-it/). 
+
+It requires a pak0.pak3 files from the original Quake game to play.
 
 Download pak0.pk3 [here](https://grlanparty.info/assets/pak0.pk3) and place into your `quake3/baseq3/pak0.pk3` path.
 

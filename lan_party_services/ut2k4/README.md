@@ -11,7 +11,7 @@ The next iteration of the legendary FPS Arena shooter, Unreal Tournament, adding
 ### Server Info
 `ut2k4.grlanparty.info`
 
-This server has a number of mutators configured and is based off of [this container](https://github.com/LacledesLAN/gamesvr-ut2004). 
+This server has a number of mutators listed [here](https://github.com/LacledesLAN/gamesvr-ut2004). 
 
 ### Installation
 

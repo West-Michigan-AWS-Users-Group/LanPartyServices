@@ -11,13 +11,11 @@ Legendary FPS Arena shooter.
 ### Server Info
 `ut99.grlanparty.info`
 
-This server has a number of mutators configured and is based off of [this container](https://github.com/Roemer/ut99-server). 
-
 Tested Game Modes/Mutators:
 - CTF Instagib
 - DM Rocket Arena
 
-See the source README in the aforementioned link for more information on available game modes and mutators.
+Game modes can be changed by redeploying the server with the desired mutator.
 
 ### Installation
 
