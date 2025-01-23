@@ -1,4 +1,5 @@
-from aws_cdk import (Aws, CfnOutput, Duration, RemovalPolicy, Size, Stack, Tags, aws_certificatemanager as certificatemanager,
+from aws_cdk import (Aws, CfnOutput, Duration, RemovalPolicy, Size, Stack, Tags,
+                     aws_certificatemanager as certificatemanager,
                      aws_cloudfront as cloudfront, aws_cloudfront_origins as origins, aws_iam as iam,
                      aws_route53 as route53, aws_route53_targets as targets, aws_s3 as s3,
                      aws_s3_deployment as s3_deployment)
@@ -97,14 +98,14 @@ function handler(event) {{
 
         distribution = cloudfront.Distribution(self, "distribution",
                                                certificate=certificate,
-                                               default_root_object="index.html",
+                                               default_root_object="site/index.html",
                                                domain_names=[domain_name, f"www.{domain_name}"],
                                                minimum_protocol_version=cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
                                                error_responses=[
                                                    cloudfront.ErrorResponse(
                                                        http_status=403,
                                                        response_http_status=403,
-                                                       response_page_path="/error.html",
+                                                       response_page_path="site/error.html",
                                                        ttl=Duration.minutes(30)
                                                    )
                                                ],
@@ -118,8 +119,8 @@ function handler(event) {{
                                                        )
                                                    ]
                                                ),
-                                               additional_behaviors={
-                                                   "/index.html": cloudfront.BehaviorOptions(
+                                               additional_behaviors={"site/index.html":
+                                                   cloudfront.BehaviorOptions(
                                                        origin=s3_origin,
                                                        response_headers_policy=my_response_headers_policy_website,
                                                        viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -145,8 +146,9 @@ function handler(event) {{
 
         # Deploy site contents to S3 bucket
         s3_deployment.BucketDeployment(self, "DeployWebsite",
-                                       sources=[s3_deployment.Source.asset("./lan_party_services/info_mirror")],
+                                       sources=[s3_deployment.Source.asset("./lan_party_services/info_mirror/site")],
                                        destination_bucket=bucket,
+                                       destination_key_prefix="site/",
                                        distribution=distribution,
                                        distribution_paths=["/*"],
                                        retain_on_delete=True)

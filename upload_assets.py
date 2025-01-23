@@ -15,6 +15,32 @@ s3_client = boto3.client('s3', config=config)
 
 account_number = os.getenv('AWS_ACCOUNT_NUMBER')
 bucket_name = f'grlanparty.info'
+folder_key = 'assets/'
+
+
+def folder_exists(bucket: str, key: str) -> bool:
+    """
+    Check if a folder exists in the S3 bucket.
+
+    :param bucket: The name of the S3 bucket.
+    :param key: The key (path) of the folder in the S3 bucket.
+    :return: True if the folder exists, False otherwise.
+    """
+    try:
+        s3_client.head_object(Bucket=bucket, Key=key)
+        return True
+    except s3_client.exceptions.ClientError:
+        return False
+
+
+def create_folder(bucket: str, key: str) -> None:
+    """
+    Create a folder in the S3 bucket.
+
+    :param bucket: The name of the S3 bucket.
+    :param key: The key (path) of the folder in the S3 bucket.
+    """
+    s3_client.put_object(Bucket=bucket, Key=key)
 
 
 def file_exists(bucket: str, key: str) -> bool:
@@ -52,10 +78,14 @@ def upload_file(file_path: str, prefix: str, messages: List[str]) -> None:
 
 if __name__ == "__main__":
     print("Starting the upload process...")
+    if not folder_exists(bucket_name, folder_key):
+        create_folder(bucket_name, folder_key)
+        print(f"Created folder s3://{bucket_name}/{folder_key}")
+
     total_files: int = len(asset_file_paths)
     messages: List[str] = []
     with ThreadPoolExecutor(max_workers=4) as executor:
-        futures = [executor.submit(upload_file, file_path, prefix, messages) for file_path, prefix in asset_file_paths]
+        futures = [executor.submit(upload_file, file_path, folder_key, messages) for file_path, prefix in asset_file_paths]
         for index, future in enumerate(as_completed(futures), start=1):
             try:
                 future.result()

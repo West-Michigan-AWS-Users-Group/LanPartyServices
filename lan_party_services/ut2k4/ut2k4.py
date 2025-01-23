@@ -72,7 +72,8 @@ class ut2k4(Stack):
         server_url = f"{app_group_l}.grlanparty.info"
         # Image
         image = ecr_assets.DockerImageAsset(self, f"{app_group}Image",
-                                            directory=os.path.join(os.path.dirname(__file__), '..', app_group_l))
+                                            directory=os.path.join(os.path.dirname(__file__), '..', app_group_l),
+                                            platform=ecr_assets.Platform.LINUX_AMD64)
         # Logging
         log_group = logs.LogGroup(self, f"{app_group}LogGroup",
                                   retention=logs.RetentionDays.ONE_DAY)

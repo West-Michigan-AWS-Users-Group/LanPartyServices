@@ -10,8 +10,8 @@ Windows, Mac
 
 
 ### Installation
-Download the Windows installer [setup_total_annihilation_commander_pack_3.1_(22139).exe](https://grlanparty.info/total_annihilation/setup_total_annihilation_commander_pack_3.1_(22139).exe)
+Download the Windows installer [setup_total_annihilation_commander_pack_3.1_(22139).exe](https://grlanparty.info/assets/total_annihilation/setup_total_annihilation_commander_pack_3.1_(22139).exe)
 
 
-Download the Mac installer [total_annihilation__commander_pack_en_1_3_15733.pkg](https://grlanparty.info/total_annihilation/total_annihilation__commander_pack_en_1_3_15733.pkg)
+Download the Mac installer [total_annihilation__commander_pack_en_1_3_15733.pkg](https://grlanparty.info/assets/total_annihilation/total_annihilation__commander_pack_en_1_3_15733.pkg)
 
