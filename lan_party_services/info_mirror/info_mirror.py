@@ -96,15 +96,6 @@ function handler(event) {{
 
         s3_origin = origins.S3Origin(bucket, origin_access_identity=cloudfront_oai)
 
-        bucket.add_to_resource_policy(
-            iam.PolicyStatement(
-                actions=["s3:ListBucket"],
-                resources=[bucket.bucket_arn],
-                principals=[iam.AnyPrincipal()],
-                effect=iam.Effect.DENY
-            )
-        )
-
         distribution = cloudfront.Distribution(self, "distribution",
                                        certificate=certificate,
                                        default_root_object="site/index.html",
