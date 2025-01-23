@@ -1,5 +1,5 @@
 # Unreal Tournament 2004
-<a href="javascript:history.back()" style="text-decoration: none; color: black;">&#8592; Back</a>
+<a href="https://grlanparty.info" style="text-decoration: none; color: black;">&#8592; Back</a>
 
 ![Unreal Tournament 2004](https://shared.steamstatic.com/store_item_assets/steam/apps/13230/header.jpg?t=1671033925)
 

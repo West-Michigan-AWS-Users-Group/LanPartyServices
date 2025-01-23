@@ -1,5 +1,5 @@
 # Quake 3
-<a href="javascript:history.back()" style="text-decoration: none; color: black;">&#8592; Back</a>
+<a href="https://grlanparty.info" style="text-decoration: none; color: black;">&#8592; Back</a>
 
 ![Quake 3: Arena](https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2200/header.jpg?t=1664229254)
 

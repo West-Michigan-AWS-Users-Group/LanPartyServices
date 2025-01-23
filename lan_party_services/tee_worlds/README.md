@@ -1,5 +1,5 @@
 # Teeworlds
-<a href="javascript:history.back()" style="text-decoration: none; color: black;">&#8592; Back</a>
+<a href="https://grlanparty.info" style="text-decoration: none; color: black;">&#8592; Back</a>
 
 ![Teeworlds](https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/380840/header.jpg?t=1578354106)
 

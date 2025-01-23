@@ -1,5 +1,5 @@
 # Beyond All Reason
-<a href="javascript:history.back()" style="text-decoration: none; color: black;">&#8592; Back</a>
+<a href="https://grlanparty.info" style="text-decoration: none; color: black;">&#8592; Back</a>
 
 ![Beyond All Reason](https://media.indiedb.com/cache/images/games/1/78/77468/thumb_620x2000/BARLoadingscreen205.jpg)
 
