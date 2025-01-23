@@ -98,7 +98,7 @@ function handler(event) {{
 
         distribution = cloudfront.Distribution(self, "distribution",
                                        certificate=certificate,
-                                       default_root_object="/index.html",
+                                       default_root_object="index.html",
                                        domain_names=[domain_name, f"www.{domain_name}"],
                                        minimum_protocol_version=cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
                                        error_responses=[
@@ -165,8 +165,6 @@ function handler(event) {{
                                        retain_on_delete=True,
                                        prune=False)
 
-        asset_bucket = s3.Bucket.from_bucket_name(self, "AssetBucket",
-                                                  asset_bucket_name)
         # Can't get this deployment to work. going to just upload manually.
         # prod-lan-party-services-info | 12/20 | 3:54:37 PM | CREATE_FAILED        | Custom::CDKBucketDeployment
         # | Deploytotal_annihilation_total_annihilation__commander_pack_en_1_3_15733_pkg_zip/CustomResource-1024Mi
