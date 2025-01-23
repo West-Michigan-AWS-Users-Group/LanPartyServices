@@ -106,7 +106,7 @@ class ut2k4(Stack):
             f"{app_group_l}-container",
             image=ecs.ContainerImage.from_docker_image_asset(image),
             logging=ecs.LogDriver.aws_logs(stream_prefix=app_group, log_group=log_group),
-            command=["ucc-bin", "server", server_start_command, "ini=UT2004.ini", "-nohomedir", "-lanplay"]
+            command=["ucc-bin", "server", server_start_command, "-nohomedir", "-lanplay"]
         )
 
         # Create the Fargate service
@@ -121,9 +121,12 @@ class ut2k4(Stack):
                 ecs.PortMapping(container_port=app_port["port"], protocol=app_port["protocol"]))
 
             # Add SG rules to NLB in core stack
-            nlb_tg_security_group.add_ingress_rule(ec2.Peer.any_ipv4(),
-                                                   ec2.Port(app_port["protocol"], app_port["port"]),
-                                                   f"Allow {app_port['protocol'].name} traffic on {app_port['port']}")
+            if app_port["protocol"] == ecs.Protocol.UDP:
+                nlb_tg_security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.udp(app_port["port"]),
+                                                       f"Allow UDP traffic on {app_port['port']}")
+            else:
+                nlb_tg_security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(app_port["port"]),
+                                                       f"Allow TCP traffic on {app_port['port']}")
 
             # Add listener
             listener_protocol = elbv2.Protocol.UDP if app_port["protocol"] == ecs.Protocol.UDP else elbv2.Protocol.TCP
