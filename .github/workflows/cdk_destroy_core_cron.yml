@@ -1,0 +1,43 @@
+name: CDK Destroy Core
+
+on:
+  schedule:
+    - cron: '30 4 * * *'
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install Python dependencies and CDK
+        run: |
+          npm install -g aws-cdk
+          python -m pip install --use-feature=fast-deps --upgrade pip
+          pip install -r cdk/requirements.txt
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-access-key-id: ${{ secrets.SA_CDK_DEPLOYUSER_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.SA_CDK_DEPLOYUSER_AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-west-2"
+
+      - name: Set environment variables
+        run: |
+          echo "AWS_ACCOUNT_NUMBER=${{ secrets.AWS_ACCOUNT_NUMBER }}" >> $GITHUB_ENV
+
+      - name: CDK destroy
+        run: |
+          cdk destroy prod-lan-party-services-core --force
