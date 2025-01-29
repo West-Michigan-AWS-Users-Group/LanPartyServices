@@ -98,8 +98,8 @@ class ut2k4(Stack):
         # Create a Fargate task definition with shared memory and CPU resources
         task_definition = ecs.FargateTaskDefinition(self, f"{app_group}TaskDef",
                                                     task_role=task_role,
-                                                    memory_limit_mib=1024,
-                                                    cpu=512)
+                                                    memory_limit_mib=512,
+                                                    cpu=256)
 
         # Sidecar container for health checks - uses busybox to respond to http requests
         health_check_container = task_definition.add_container("healthcheck",
