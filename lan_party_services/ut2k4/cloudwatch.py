@@ -111,6 +111,12 @@ def create_cloudwatch_resources(scope, stack_name, cluster, service, nlb, log_gr
         resources=["*"]
     ))
 
+    # Create a CloudWatch Logs subscription filter
+    logs.SubscriptionFilter(scope, f"{stack_name_ansi}LogSubscriptionFilter",
+                            log_group=log_group,
+                            destination=logs.LogSubscriptionDestination.sqs(queue),
+                            filter_pattern=FilterPattern.any_term("___New Player Joined -"))
+
     metric_filter = logs.MetricFilter(scope, f"{stack_name_ansi}LogFilter",
                                       log_group=log_group,
                                       metric_namespace=stack_name_ansi,
@@ -119,12 +125,12 @@ def create_cloudwatch_resources(scope, stack_name, cluster, service, nlb, log_gr
                                       filter_pattern=FilterPattern.any_term("___New Player Joined -"),
                                       metric_value="1")
     # Create a CloudWatch alarm based on the metric filter
-    alarm = cloudwatch.Alarm(scope, f"{stack_name_ansi}PlayerJoinedAlarm",
-                             metric=metric_filter.metric(),
-                             threshold=1,
-                             evaluation_periods=1,
-                             datapoints_to_alarm=1,
-                             treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING)
+    # alarm = cloudwatch.Alarm(scope, f"{stack_name_ansi}PlayerJoinedAlarm",
+    #                          metric=metric_filter.metric(),
+    #                          threshold=1,
+    #                          evaluation_periods=1,
+    #                          datapoints_to_alarm=1,
+    #                          treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING)
 
     # Add the SNS topic as an alarm action
     alarm.add_alarm_action(cloudwatch_actions.SnsAction(topic))
