@@ -4,6 +4,7 @@ from aws_cdk import (Duration, Fn, Stack, Tags, aws_ec2 as ec2, aws_ecr_assets a
                      aws_elasticloadbalancingv2 as elbv2, aws_iam as iam, aws_logs as logs, aws_route53 as route53,
                      aws_route53_targets as targets)
 from constructs import Construct
+from .cloudwatch import create_cloudwatch_resources
 
 from lan_party_services.core.core import used_azs
 
@@ -41,11 +42,19 @@ class ut2k4(Stack):
         nlb_arn = Fn.import_value("PublicNLBArn")
         nlb_dns_name = Fn.import_value("PublicNLBDnsName")
         nlb_canonical_hosted_zone_id = Fn.import_value("PublicNLBCanonicalHostedZoneId")
-        nlb = elbv2.NetworkLoadBalancer.from_network_load_balancer_attributes(self, "ImportedNLB",
+        nlb_full_name = Fn.import_value("PublicNLBFullName")
+        # nlb = elbv2.NetworkLoadBalancer.from_network_load_balancer_attributes(self, "ImportedNLB",
+        #                                                                       load_balancer_arn=nlb_arn,
+        #                                                                       vpc=vpc,
+        #                                                                       load_balancer_canonical_hosted_zone_id=nlb_canonical_hosted_zone_id,
+        #                                                                       load_balancer_dns_name=nlb_dns_name,
+        #                                                                       load_balancer_full_name=nlb_full_name)
+        nlb = elbv2.NetworkLoadBalancer.from_network_load_balancer_attributes(self, "NLB1",
                                                                               load_balancer_arn=nlb_arn,
                                                                               vpc=vpc,
                                                                               load_balancer_canonical_hosted_zone_id=nlb_canonical_hosted_zone_id,
-                                                                              load_balancer_dns_name=nlb_dns_name)
+                                                                              load_balancer_dns_name=nlb_dns_name,
+                                                                              )
 
         ### Server config -
         #     Documentation: https://github.com/LacledesLAN/gamesvr-ut2004/blob/master/Documentation/ServerSetup.md
@@ -159,3 +168,5 @@ class ut2k4(Stack):
                         record_name=server_url,
                         target=route53.RecordTarget.from_alias(targets.LoadBalancerTarget(nlb)),
                         zone=zone)
+
+        create_cloudwatch_resources(self, self.stack_name, cluster, service, nlb, log_group)

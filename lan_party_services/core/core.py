@@ -60,6 +60,7 @@ class core(Stack):
         CfnOutput(self, "PublicNLBDnsName", value=nlb.load_balancer_dns_name, export_name="PublicNLBDnsName")
         CfnOutput(self, "PublicNLBCanonicalHostedZoneId", value=nlb.load_balancer_canonical_hosted_zone_id,
                   export_name="PublicNLBCanonicalHostedZoneId")
+        CfnOutput(self, "PublicNLBFullName", value=nlb.load_balancer_full_name, export_name="PublicNLBFullName")
 
         # Export route table IDs
         CfnOutput(self, "PublicRouteTableIds",
