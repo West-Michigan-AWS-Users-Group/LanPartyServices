@@ -11,7 +11,7 @@ from lan_party_services.ut2k4.ut2k4 import ut2k4
 from lan_party_services.ut99.ut99 import ut99
 
 # Execute the process_md_into_html.py script
-subprocess.run(['python3', 'process_md_into_html.py'], check=True)
+subprocess.run(["python3", "process_md_into_html.py"], check=True)
 
 # Upload assets to S3 - only needed one time prior to deployment. Copyrighted assets are not included in this repo,
 # so you will need to provide them to work, ie, Quake, Unreal Tournament, Total Annihilation, etc.
@@ -23,8 +23,8 @@ environment = "prod"
 prefix = "lan-party-services"
 template_bucket_name = f"{environment}-lan-party-services-cfn-templates"
 
-env_us_east_1 = cdk.Environment(account=account, region='us-east-1')
-env_us_east_2 = cdk.Environment(account=account, region='us-east-2')
+env_us_east_1 = cdk.Environment(account=account, region="us-east-1")
+env_us_east_2 = cdk.Environment(account=account, region="us-east-2")
 
 app = cdk.App()
 
@@ -38,9 +38,10 @@ teeworlds(app, f"{environment}-{prefix}-teeworlds", env=env_us_east_2)
 
 app.synth()
 
+
 # Add the
 def bucket_exists(bucket_name):
-    s3_client = boto3.client('s3')
+    s3_client = boto3.client("s3")
     try:
         s3_client.head_bucket(Bucket=bucket_name)
         return True
@@ -50,12 +51,12 @@ def bucket_exists(bucket_name):
 
 def upload_templates_to_s3(bucket_name):
     if bucket_exists(bucket_name):
-        s3_client = boto3.client('s3')
-        cdk_out_dir = './cdk.out'
+        s3_client = boto3.client("s3")
+        cdk_out_dir = "./cdk.out"
 
         for root, dirs, files in os.walk(cdk_out_dir):
             for file in files:
-                if file.endswith('template.json'):
+                if file.endswith("template.json"):
                     file_path = os.path.join(root, file)
                     s3_key = os.path.relpath(file_path, cdk_out_dir)
                     s3_client.upload_file(file_path, bucket_name, s3_key)

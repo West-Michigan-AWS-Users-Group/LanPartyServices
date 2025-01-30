@@ -7,15 +7,17 @@ from lan_party_services.asset_paths import asset_file_paths
 from typing import List
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 # Configure boto3 client with increased max_pool_connections
 config = Config(max_pool_connections=50)
-s3_client = boto3.client('s3', config=config)
+s3_client = boto3.client("s3", config=config)
 
-account_number = os.getenv('AWS_ACCOUNT_NUMBER')
-bucket_name = f'grlanparty.info'
-folder_key = 'assets/'
+account_number = os.getenv("AWS_ACCOUNT_NUMBER")
+bucket_name = f"grlanparty.info"
+folder_key = "assets/"
 
 
 def folder_exists(bucket: str, key: str) -> bool:
@@ -66,10 +68,12 @@ def upload_file(file_path: str, prefix: str, messages: List[str]) -> None:
     :param prefix: The prefix to use for the file in the S3 bucket.
     :param messages: List to collect messages for printing later.
     """
-    full_path = os.path.join('lan_party_services', file_path)
+    full_path = os.path.join("lan_party_services", file_path)
     key = os.path.join(prefix, os.path.basename(full_path))
     if file_exists(bucket_name, key):
-        messages.append(f"File s3://{bucket_name}/{key} already exists. Skipping upload.")
+        messages.append(
+            f"File s3://{bucket_name}/{key} already exists. Skipping upload."
+        )
     else:
         messages.append(f"Uploading {full_path} to s3://{bucket_name}/{key}...")
         s3_client.upload_file(full_path, bucket_name, key)
@@ -85,7 +89,10 @@ if __name__ == "__main__":
     total_files: int = len(asset_file_paths)
     messages: List[str] = []
     with ThreadPoolExecutor(max_workers=4) as executor:
-        futures = [executor.submit(upload_file, file_path, folder_key, messages) for file_path, prefix in asset_file_paths]
+        futures = [
+            executor.submit(upload_file, file_path, folder_key, messages)
+            for file_path, prefix in asset_file_paths
+        ]
         for index, future in enumerate(as_completed(futures), start=1):
             try:
                 future.result()

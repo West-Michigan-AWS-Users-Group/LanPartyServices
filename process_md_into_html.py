@@ -18,28 +18,32 @@ def convert_md_to_html(root_dir: str, target_dir: str) -> None:
 
     # Walk through the root directory
     for subdir, _, files in os.walk(root_dir):
-        if 'README.md' in files:
-            readme_path = os.path.join(subdir, 'README.md')
-            with open(readme_path, 'r', encoding='utf-8') as f:
+        if "README.md" in files:
+            readme_path = os.path.join(subdir, "README.md")
+            with open(readme_path, "r", encoding="utf-8") as f:
                 md_content = f.read()
 
             # Convert markdown to HTML
             html_content = markdown.markdown(md_content)
 
             # Add the CSS link to the HTML content
-            html_content_with_css = f'<html><head>{css_link}</head><body>{html_content}</body></html>'
+            html_content_with_css = (
+                f"<html><head>{css_link}</head><body>{html_content}</body></html>"
+            )
 
             # Determine the output HTML file path
             relative_path = os.path.relpath(subdir, root_dir)
             output_dir = os.path.join(target_dir, relative_path)
             os.makedirs(output_dir, exist_ok=True)
-            output_path = os.path.join(output_dir, 'index.html')
+            output_path = os.path.join(output_dir, "index.html")
 
             # Write the HTML content to the output file
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 f.write(html_content_with_css)
 
-    print("Markdown files have been converted to HTML with CSS and saved in the info_mirror directory.")
+    print(
+        "Markdown files have been converted to HTML with CSS and saved in the info_mirror directory."
+    )
 
 
 def render_script_js(root_dir: str, script_path: str) -> None:
@@ -50,8 +54,12 @@ def render_script_js(root_dir: str, script_path: str) -> None:
     :param script_path: The path to the script.js file to be updated.
     """
     # Get the list of folders excluding 'core' and 'info_mirror'
-    folders: List[str] = [d for d in os.listdir(root_dir) if
-                          os.path.isdir(os.path.join(root_dir, d)) and d not in ['__pycache__', 'core', 'info_mirror']]
+    folders: List[str] = [
+        d
+        for d in os.listdir(root_dir)
+        if os.path.isdir(os.path.join(root_dir, d))
+        and d not in ["__pycache__", "core", "info_mirror"]
+    ]
 
     # JavaScript code to be written to the script.js file
     js_code = f"""
@@ -86,16 +94,16 @@ def render_script_js(root_dir: str, script_path: str) -> None:
         }});
     """
     # Write the JavaScript code to the script.js file
-    with open(script_path, 'w', encoding='utf-8') as f:
+    with open(script_path, "w", encoding="utf-8") as f:
         f.write(js_code)
 
     print(f"Script.js file has been updated with folders from {root_dir}.")
 
 
 if __name__ == "__main__":
-    root_directory = 'lan_party_services'
-    target_directory = os.path.join(root_directory, 'info_mirror/site')
-    script_js_path = os.path.join(target_directory, 'script.js')
+    root_directory = "lan_party_services"
+    target_directory = os.path.join(root_directory, "info_mirror/site")
+    script_js_path = os.path.join(target_directory, "script.js")
 
     convert_md_to_html(root_directory, target_directory)
     render_script_js(root_directory, script_js_path)

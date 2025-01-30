@@ -1,15 +1,24 @@
-import aws_cdk as core
-import aws_cdk.assertions as assertions
+import sys
+import os
+from aws_cdk import App
+from aws_cdk.assertions import Template, Match
+
+# Add the root directory to the PYTHONPATH
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from lan_party_services.lan_party_services_stack import LanPartyServicesStack
 
-# example tests. To run these tests, uncomment this file along with the example
-# resource in lan_party_services/lan_party_services_stack.py
-def test_sqs_queue_created():
-    app = core.App()
-    stack = LanPartyServicesStack(app, "lan-party-services")
-    template = assertions.Template.from_stack(stack)
 
-#     template.has_resource_properties("AWS::SQS::Queue", {
-#         "VisibilityTimeout": 300
-#     })
+def test_all_resources_have_service_tag():
+    app = App()
+    stack = LanPartyServicesStack(app, "lan-party-services")
+    template = Template.from_stack(stack)
+
+    # Iterate through all resources in the template
+    for resource in template.to_json().get("Resources", {}).values():
+        # Check if the resource has tags
+        tags = resource.get("Properties", {}).get("Tags", [])
+        # Assert that the 'service' tag is present with any value
+        assert any(
+            tag.get("Key") == "service" and tag.get("Value") is not None for tag in tags
+        ), f"Resource {resource} does not have the 'service' tag with any value"
