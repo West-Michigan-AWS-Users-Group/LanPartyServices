@@ -12,8 +12,7 @@ logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
-    webhook_url = "https://canary.discord.com/api/webhooks/1334127928706994248/8tCtJ17nmOxP6bI-dVhH3C0Hh71xSydbGr-94H8Igm959rPHjew6ilYMJ4qplXP3RLp_"
-    # webhook_url = os.environ['WEBHOOK_URL']
+    webhook_url = os.environ["DISCORD_WEBHOOK_URL"]
     logger.info(f"Log event: {event}")
 
     if "awslogs" not in event:

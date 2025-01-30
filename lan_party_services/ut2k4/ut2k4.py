@@ -15,7 +15,7 @@ from aws_cdk import (
     aws_route53_targets as targets,
 )
 from constructs import Construct
-from .cloudwatch import create_cloudwatch_resources
+from lan_party_services.common.cloudwatch import create_cloudwatch_resources
 
 from lan_party_services.core.core import used_azs
 
@@ -81,6 +81,10 @@ class ut2k4(Stack):
 
         # Server start command
         server_start_command = ctf_facing_worlds_instagib_low_grav
+
+        # Define log strings to send to Discord, messages matching any of this string will be sent to Discord
+        log_strings = ["___New Player Joined -"]
+
         # Networking
         app_ports = [
             {"port": 7777, "protocol": ecs.Protocol.UDP},
@@ -243,5 +247,5 @@ class ut2k4(Stack):
         )
 
         create_cloudwatch_resources(
-            self, self.stack_name, cluster, service, nlb, log_group
+            self, self.stack_name, cluster, service, nlb, log_group, log_strings
         )
