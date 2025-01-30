@@ -17,3 +17,5 @@ cdk.out
 
 .DS_Store
 .idea*
+
+cdk.context.json
