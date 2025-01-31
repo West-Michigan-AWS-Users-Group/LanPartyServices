@@ -6,6 +6,7 @@
 # The first thing you need to do is import the library.
 import interactions
 import os
+import logging
 
 # Now, let's create an instance of a bot.
 # When you make a bot, we refer to it as the "client."
@@ -17,7 +18,12 @@ import os
 intents = interactions.Intents.DEFAULT | interactions.Intents.MESSAGE_CONTENT
 client = interactions.Client(intents=intents)
 
+# We need to get the token from the environment variables.
 discord_bot_client_token = os.getenv('DISCORD_BOT_CLIENT_TOKEN')
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 # With our client established, let's have the library inform us when the client is ready.
@@ -25,11 +31,11 @@ discord_bot_client_token = os.getenv('DISCORD_BOT_CLIENT_TOKEN')
 # You can provide the name of the event, prefixed by an "on_", or by telling the event decorator what event it is.
 @interactions.listen()
 async def on_ready():
-    # We can use the client "app" attribute to get information about the bot.
-    print(f"We're online! We've logged in as {client.app.name}.")
-
-    # We're also able to use property methods to gather additional data.
-    print(f"Our latency is {round(client.latency)} ms.")
+    logger.info(f"We're online! We've logged in as {client.app.name}.")
+    if client.latency != float('inf') and client.latency is not None:
+        logger.info(f"Our latency is {round(client.latency)} ms.")
+    else:
+        logger.info("Latency is infinity or undefined, cannot convert to integer.")
 
 
 # We can either pass in the event name or make the function name be the event name.
@@ -47,7 +53,7 @@ async def name_this_however_you_want(message_create: interactions.events.Message
     # Keep in mind that you can only access the message content if your bot has the MESSAGE_CONTENT intent.
     # You can find more information on this in the migration section of the quickstart guide.
     message: interactions.Message = message_create.message
-    print(f"We've received a message from {message.author.username}. The message is: {message.content}.")
+    logger.info(f"We've received a message from {message.author.username}. The message is: {message.content}.")
 
 
 # Now, let's create a command.
@@ -62,10 +68,10 @@ async def hello_world(ctx: interactions.SlashContext):
 
     # Now, let's send back a response.
     # The interaction response should be the LAST thing you do when a command is ran.
-    await ctx.send("hello world!")
+    await ctx.send("hello world from the running botso!")
 
     # However, any code you put after a response will still execute unless you prevent it from doing so.
-    print("we ran.")
+    logger.info("we ran.")
 
 
 # After we've declared all of the bot code we want, we need to tell the library to run our bot.

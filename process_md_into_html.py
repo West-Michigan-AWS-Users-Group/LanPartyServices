@@ -87,7 +87,7 @@ def render_script_js(root_dir: str, script_path: str) -> None:
                     formattedName = 'Unreal Tournament 1999';
                 }} else if (folder === 'bar') {{
                     formattedName = 'Beyond All Reason';
-                }} else if (folder === 'cnc_generals_zero_hour' {{
+                }} else if (folder === 'cnc_generals_zero_hour') {{
                     formattedName = 'Command and Conquer Generals: Zero Hour';
                 }} else {{
                     formattedName = folder.replace(/_/g, ' ').replace(/\\b\\w/g, char => char.toUpperCase());
