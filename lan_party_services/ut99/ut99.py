@@ -16,6 +16,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 
+from lan_party_services.common.cloudwatch import create_cloudwatch_resources
 from lan_party_services.core.core import used_azs
 
 
@@ -74,6 +75,9 @@ class ut99(Stack):
             "DM-Deck16][?game=BotPack.DeathMatchPlus?mutator=BotPack.RocketArena"
         )
         server_start_command = ffa_rocket_arena
+
+        log_strings = ["___New Player Joined -", "UTServerAdmin Initialized", "SIGTERM"]
+
         # Networking
         app_ports = [7777, 7778, 7779, 7780, 7781]
         health_check_port = 8080
@@ -218,4 +222,8 @@ class ut99(Stack):
             record_name=server_url,
             target=route53.RecordTarget.from_alias(targets.LoadBalancerTarget(nlb)),
             zone=zone,
+        )
+
+        create_cloudwatch_resources(
+            self, self.stack_name, cluster, service, nlb, log_group, log_strings
         )

@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import urllib3
 import logging
@@ -25,9 +26,28 @@ def lambda_handler(event, context):
     with gzip.GzipFile(fileobj=BytesIO(compressed_payload)) as gzipfile:
         log_data = json.loads(gzipfile.read().decode("utf-8"))
 
+
+
     # Extract log events
     for log_event in log_data["logEvents"]:
         message = log_event["message"]
+        # Unreal Tournament 2004 specific message parsing
+        if 'SIGTERM' in message:
+            message = 'Server is down: Reason: SIGTERM'
+        elif 'UTServerAdmin Initialized' in message:
+            message = 'Server up is up. Reason: UTServerAdmin Initialized'
+        elif '___New Player Joined -' in message:
+            player_info = message.split('___New Player Joined -')[1]
+            message = f'{player_info} joined the server'
+        # Quake 3 Arena specific message parsing
+        if '------- Game Initialization -------' in message:
+            message = 'Server up is up. Reason: Game Initialization'
+        elif 'broadcast: print' in message:
+            match = re.search(r'broadcast: print "([^\\^]+)\^7 entered the game\\n"', message)
+            if match:
+                player_name = match.group(1)
+                message = f'{player_name} entered the game'
+
         logger.info(f"Log message: {message}")
 
         # Prepare the message payload

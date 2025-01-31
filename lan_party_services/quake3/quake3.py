@@ -16,6 +16,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 
+from lan_party_services.common.cloudwatch import create_cloudwatch_resources
 from lan_party_services.core.core import used_azs
 
 
@@ -69,6 +70,12 @@ class quake3(Stack):
         # Networking
         app_port = 27960
         health_check_port = 8080
+
+        log_strings = [
+            "------- Game Initialization -------",
+            "broadcast: print",
+            "SIGTERM",
+        ]
         server_url = f"{app_group_l}.grlanparty.info"
         # Image
         image = ecr_assets.DockerImageAsset(
@@ -213,4 +220,8 @@ class quake3(Stack):
             record_name=server_url,
             target=route53.RecordTarget.from_alias(targets.LoadBalancerTarget(nlb)),
             zone=zone,
+        )
+
+        create_cloudwatch_resources(
+            self, self.stack_name, cluster, service, nlb, log_group, log_strings
         )
