@@ -38,10 +38,6 @@ jobs:
         run: |
           echo "AWS_ACCOUNT_NUMBER=${{ secrets.AWS_ACCOUNT_NUMBER }}" >> $GITHUB_ENV
 
-      - name: CDK destroy info
-        run: cdk destroy prod-lan-party-services-info --force
-        continue-on-error: true
-
       - name: CDK destroy quake3
         run: cdk destroy prod-lan-party-services-quake3 --force
         continue-on-error: true
