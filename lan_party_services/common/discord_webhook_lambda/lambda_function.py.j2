@@ -28,7 +28,7 @@ def lambda_handler(event, context):
 
     if '{{ server_name }}'.lower() in ['quake3', 'ut2k4', 'ut99', 'tee-worlds']:
         if 'ut' in '{{ server_name }}'.lower():
-            server_emoji = ':unreal: {{ server_name }}'.lower()[2:]
+            server_emoji = ':unreal: {{ server_name }}'.lower()
         else:
             server_emoji = ':{{ server_name }}:'.lower()
     else:
