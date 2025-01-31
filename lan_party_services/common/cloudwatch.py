@@ -131,7 +131,9 @@ def create_cloudwatch_resources(
     )
 
     # Determine the stack's folder path
-    stack_webhook_module_path = os.path.join(os.path.dirname(__file__), "..", stack_name_s, "discord_webhook_lambda")
+    stack_webhook_module_path = os.path.join(
+        os.path.dirname(__file__), "..", stack_name_s, "discord_webhook_lambda"
+    )
 
     # Validate the presence of the directory
     os.makedirs(stack_webhook_module_path, exist_ok=True)
@@ -141,7 +143,11 @@ def create_cloudwatch_resources(
     open(init_file_path, "w").close()
 
     # Render the Jinja template
-    env = Environment(loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), "discord_webhook_lambda")))
+    env = Environment(
+        loader=FileSystemLoader(
+            os.path.join(os.path.dirname(__file__), "discord_webhook_lambda")
+        )
+    )
     template = env.get_template("lambda_function.py.j2")
     rendered_code = template.render(server_name=stack_name_s.capitalize())
 

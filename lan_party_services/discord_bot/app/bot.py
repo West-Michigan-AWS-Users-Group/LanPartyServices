@@ -19,7 +19,7 @@ intents = interactions.Intents.DEFAULT | interactions.Intents.MESSAGE_CONTENT
 client = interactions.Client(intents=intents)
 
 # We need to get the token from the environment variables.
-discord_bot_client_token = os.getenv('DISCORD_BOT_CLIENT_TOKEN')
+discord_bot_client_token = os.getenv("DISCORD_BOT_CLIENT_TOKEN")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 @interactions.listen()
 async def on_ready():
     logger.info(f"We're online! We've logged in as {client.app.name}.")
-    if client.latency != float('inf') and client.latency is not None:
+    if client.latency != float("inf") and client.latency is not None:
         logger.info(f"Our latency is {round(client.latency)} ms.")
     else:
         logger.info("Latency is infinity or undefined, cannot convert to integer.")
@@ -53,7 +53,9 @@ async def name_this_however_you_want(message_create: interactions.events.Message
     # Keep in mind that you can only access the message content if your bot has the MESSAGE_CONTENT intent.
     # You can find more information on this in the migration section of the quickstart guide.
     message: interactions.Message = message_create.message
-    logger.info(f"We've received a message from {message.author.username}. The message is: {message.content}.")
+    logger.info(
+        f"We've received a message from {message.author.username}. The message is: {message.content}."
+    )
 
 
 # Now, let's create a command.
@@ -61,7 +63,9 @@ async def name_this_however_you_want(message_create: interactions.events.Message
 # The command is called with a context object, which contains information about the user, the channel, and the guild.
 # Context is what we call the described information given from an interaction response, what comes from a command.
 # The context object in this case is a class for commands, but can also be one for components if used that way.
-@interactions.slash_command(name="hello-world", description='A command that says "hello world!"')
+@interactions.slash_command(
+    name="hello-world", description='A command that says "hello world!"'
+)
 async def hello_world(ctx: interactions.SlashContext):
     # "ctx" is an abbreviation of the context object.
     # You don't need to type hint this, but it's recommended to do so.
