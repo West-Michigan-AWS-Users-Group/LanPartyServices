@@ -190,9 +190,10 @@ def create_cloudwatch_resources(
 
     # Create individual metric filters for each log string
     for log_string in log_strings:
+        log_string_ansi = re.sub(r"[^a-zA-Z0-9]", "", log_string)
         logs.MetricFilter(
             scope,
-            f"{stack_name_ansi}LogFilter{log_string}",
+            f"{stack_name_ansi}Lf{log_string_ansi}Metric"[:64],
             log_group=log_group,
             metric_namespace=stack_name_ansi,
             metric_name=f"{stack_name_s}_{log_string}",
