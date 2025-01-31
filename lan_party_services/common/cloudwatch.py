@@ -134,7 +134,9 @@ def create_cloudwatch_resources(
         f"{stack_name_ansi}DiscordWebhookLambda",
         runtime=_lambda.Runtime.PYTHON_3_11,
         handler="lambda_function.lambda_handler",
-        code=_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), "discord_webhook_lambda")),
+        code=_lambda.Code.from_asset(
+            os.path.join(os.path.dirname(__file__), "discord_webhook_lambda")
+        ),
         environment={"DISCORD_WEBHOOK_URL": discord_webhook_url},
     )
 

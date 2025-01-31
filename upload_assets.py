@@ -81,7 +81,7 @@ def upload_file(file_path: str, prefix: str, messages: List[str]) -> None:
 
 
 if __name__ == "__main__":
-    print("Starting the upload process...")
+    print(f"Starting the upload process to {bucket_name}/{folder_key}...")
     if not folder_exists(bucket_name, folder_key):
         create_folder(bucket_name, folder_key)
         print(f"Created folder s3://{bucket_name}/{folder_key}")

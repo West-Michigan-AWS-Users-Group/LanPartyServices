@@ -17,7 +17,6 @@ from aws_cdk import (
 )
 from constructs import Construct
 import os
-from lan_party_services.asset_paths import asset_file_paths
 
 
 class info(Stack):
@@ -42,7 +41,6 @@ class info(Stack):
         zone = route53.HostedZone.from_lookup(self, "Zone", domain_name=domain_name)
         # Copyrighted material, binaries or other large files that cannot be otherwise stored publicly in git
         account_number = os.getenv("AWS_ACCOUNT_NUMBER")
-        asset_bucket_name = f"cdk-hnb659fds-assets-{account_number}-{Aws.REGION}"
 
         bucket = s3.Bucket(
             self,
@@ -163,24 +161,6 @@ function handler(event) {{
                 cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
                 response_headers_policy=my_response_headers_policy_website,
             ),
-            # additional_behaviors={
-            #     "site/*": cloudfront.BehaviorOptions(
-            #         origin=s3_origin,
-            #         compress=True,
-            #         function_associations=[
-            #             cloudfront.FunctionAssociation(
-            #                 function=redirect_function,
-            #                 event_type=cloudfront.FunctionEventType.VIEWER_REQUEST
-            #             )
-            #         ],
-            #         origin_request_policy=cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
-            #         viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-            #         allowed_methods=cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-            #         cached_methods=cloudfront.CachedMethods.CACHE_GET_HEAD,
-            #         cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
-            #         response_headers_policy=my_response_headers_policy_website
-            #     )
-            # }
         )
 
         route53.ARecord(
