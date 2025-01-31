@@ -18,6 +18,10 @@ def convert_md_to_html(root_dir: str, target_dir: str) -> None:
 
     # Walk through the root directory
     for subdir, _, files in os.walk(root_dir):
+        # Skip the discord_bot directory
+        if "discord_bot" in subdir:
+            continue
+
         if "README.md" in files:
             readme_path = os.path.join(subdir, "README.md")
             with open(readme_path, "r", encoding="utf-8") as f:

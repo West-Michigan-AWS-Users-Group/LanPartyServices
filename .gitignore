@@ -21,3 +21,4 @@ cdk.out
 .idea*
 
 cdk.context.json
+/lan_party_services/discord_bot/app/.env
