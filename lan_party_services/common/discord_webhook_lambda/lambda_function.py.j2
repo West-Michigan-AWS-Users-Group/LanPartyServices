@@ -25,22 +25,13 @@ def lambda_handler(event, context):
     with gzip.GzipFile(fileobj=BytesIO(compressed_payload)) as gzipfile:
         log_data = json.loads(gzipfile.read().decode("utf-8"))
 
-
-    if '{{ server_name }}'.lower() in ['quake3', 'ut2k4', 'ut99', 'tee-worlds']:
-        if 'ut' in '{{ server_name }}'.lower():
-            server_emoji = ':unreal: {{ server_name }}'.lower()
-        else:
-            server_emoji = ':{{ server_name }}:'.lower()
-    else:
-        server_emoji = ':lan_party: {{ server_name }}'.lower()
-
     # Extract log events
     for log_event in log_data["logEvents"]:
         message = log_event["message"]
         logger.info(f"Log message: {message}")
 
         # Prepare the message payload
-        msg = {"username": f"{{ server_name }} Server Bot", "content": f" {server_emoji} - {message}"}
+        msg = {"username": f"{{ server_name }} Server Bot", "content": message}
         logger.info(f"Log msg: {msg}")
         headers = {"Content-Type": "application/json"}
 
