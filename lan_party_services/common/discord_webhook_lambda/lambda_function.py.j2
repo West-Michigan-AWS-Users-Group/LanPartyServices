@@ -63,11 +63,13 @@ def lambda_handler(event, context):
         headers = {"Content-Type": "application/json"}
 
         # Send the message to each Discord webhook
-        for webhook_url in webhook_urls:
-            response = http.request(
-                "POST", webhook_url, body=json.dumps(msg), headers=headers, retries=False
-            )
-            logger.info(f"Response status: {response.status}")
-            logger.info(f"Response data: {response.data}")
+        if not skip_message:
+            for webhook_url in webhook_urls:
+                response = http.request(
+                    "POST", webhook_url, body=json.dumps(msg), headers=headers, retries=False
+                )
+                logger.info(f"Response status: {response.status}")
+                logger.info(f"Response data: {response.data}")
 
-        return {"statusCode": 200, "body": json.dumps("Message sent to Discord!")}
+            return {"statusCode": 200, "body": json.dumps("Message sent to Discord!")}
+        return {"statusCode": 200, "body": json.dumps("Message skipped!")}
