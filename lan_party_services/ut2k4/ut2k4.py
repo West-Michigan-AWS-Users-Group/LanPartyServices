@@ -83,7 +83,7 @@ class ut2k4(Stack):
         server_start_command = ctf_facing_worlds_instagib_low_grav
 
         # Define log strings to send to Discord, messages matching any of this string will be sent to Discord
-        log_strings = ["___New Player Joined -"]
+        log_strings = ["___New Player Joined -", "Close TcpipConnection", "UTServerAdmin Initialized", "START MATCH"]
 
         # Networking
         app_ports = [

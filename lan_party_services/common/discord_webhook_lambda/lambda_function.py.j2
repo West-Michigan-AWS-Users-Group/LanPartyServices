@@ -12,8 +12,9 @@ logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
-    webhook_url = os.environ["DISCORD_WEBHOOK_URL"]
+    webhook_urls = os.environ["DISCORD_WEBHOOK_URL"].split(",")
     logger.info(f"Log event: {event}")
+    logger.info('Number of webhooks: %s', len(webhook_urls))
 
     if "awslogs" not in event:
         logger.error("No awslogs found in event")
@@ -24,22 +25,31 @@ def lambda_handler(event, context):
     with gzip.GzipFile(fileobj=BytesIO(compressed_payload)) as gzipfile:
         log_data = json.loads(gzipfile.read().decode("utf-8"))
 
+
+    if '{{ server_name }}'.lower() in ['quake3', 'ut2k4', 'ut99', 'tee-worlds']:
+        if 'ut' in '{{ server_name }}'.lower():
+            server_emoji = ':unreal: {{ server_name }}'.lower()[2:]
+        else:
+            server_emoji = ':{{ server_name }}:'.lower()
+    else:
+        server_emoji = ':lan_party: {{ server_name }}'.lower()
+
     # Extract log events
     for log_event in log_data["logEvents"]:
         message = log_event["message"]
         logger.info(f"Log message: {message}")
 
         # Prepare the message payload
-        msg = {"username": "UT2k4 Server Bot", "content": f"{message}"}
+        msg = {"username": f"{{ server_name }} Server Bot", "content": f" {server_emoji} - {message}"}
         logger.info(f"Log msg: {msg}")
         headers = {"Content-Type": "application/json"}
 
-        # Send the message to the Discord webhook
-        response = http.request(
-            "POST", webhook_url, body=json.dumps(msg), headers=headers, retries=False
-        )
-
-        logger.info(f"Response status: {response.status}")
-        logger.info(f"Response data: {response.data}")
+        # Send the message to each Discord webhook
+        for webhook_url in webhook_urls:
+            response = http.request(
+                "POST", webhook_url, body=json.dumps(msg), headers=headers, retries=False
+            )
+            logger.info(f"Response status: {response.status}")
+            logger.info(f"Response data: {response.data}")
 
     return {"statusCode": 200, "body": json.dumps("Message sent to Discord!")}

@@ -1,4 +1,6 @@
 import os
+import uuid
+from jinja2 import Environment, FileSystemLoader
 import re
 from typing import List
 
@@ -24,7 +26,7 @@ def create_cloudwatch_resources(
     log_strings: List[str],
 ) -> None:
     """
-    Create CloudWatch resources including a dashboard, widgets, and Lambda function.
+    Create CloudWatch resources including a dashboard, widgets, and Lambda function used for sending webhooks.
 
     Args:
         scope (object): The scope in which to define this construct.
@@ -128,15 +130,33 @@ def create_cloudwatch_resources(
         scope, ssm_parameter_path
     )
 
+    # Determine the stack's folder path
+    stack_webhook_module_path = os.path.join(os.path.dirname(__file__), "..", stack_name_s, "discord_webhook_lambda")
+
+    # Validate the presence of the directory
+    os.makedirs(stack_webhook_module_path, exist_ok=True)
+
+    # Add an __init__.py file to the directory
+    init_file_path = os.path.join(stack_webhook_module_path, "__init__.py")
+    open(init_file_path, "w").close()
+
+    # Render the Jinja template
+    env = Environment(loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), "discord_webhook_lambda")))
+    template = env.get_template("lambda_function.py.j2")
+    rendered_code = template.render(server_name=stack_name_s.capitalize())
+
+    # Save the rendered code to a temporary file with a unique prefix
+    temp_file_path = os.path.join(stack_webhook_module_path, f"lambda_function.py")
+    with open(temp_file_path, "w") as temp_file:
+        temp_file.write(rendered_code)
+
     # Create a Lambda function that can send webhook messages to a Discord channel
     lambda_function = _lambda.Function(
         scope,
         f"{stack_name_ansi}DiscordWebhookLambda",
         runtime=_lambda.Runtime.PYTHON_3_11,
-        handler="lambda_function.lambda_handler",
-        code=_lambda.Code.from_asset(
-            os.path.join(os.path.dirname(__file__), "discord_webhook_lambda")
-        ),
+        handler=f"lambda_function.lambda_handler",
+        code=_lambda.Code.from_asset(stack_webhook_module_path),
         environment={"DISCORD_WEBHOOK_URL": discord_webhook_url},
     )
 
@@ -150,16 +170,20 @@ def create_cloudwatch_resources(
         )
     )
 
-    # Create CloudWatch Logs subscription filters and metric filters for each log string
-    for log_string in log_strings:
-        logs.SubscriptionFilter(
-            scope,
-            f"{stack_name_ansi}LogSubscriptionFilter{log_string}",
-            log_group=log_group,
-            destination=cloudwatch_destinations.LambdaDestination(lambda_function),
-            filter_pattern=FilterPattern.any_term(log_string),
-        )
+    # Combine log strings into a single filter pattern
+    combined_filter_pattern = FilterPattern.any_term(*log_strings)
 
+    # Create a single CloudWatch Logs subscription filter with the combined pattern
+    logs.SubscriptionFilter(
+        scope,
+        f"{stack_name_ansi}LogSubscriptionFilter",
+        log_group=log_group,
+        destination=cloudwatch_destinations.LambdaDestination(lambda_function),
+        filter_pattern=combined_filter_pattern,
+    )
+
+    # Create individual metric filters for each log string
+    for log_string in log_strings:
         logs.MetricFilter(
             scope,
             f"{stack_name_ansi}LogFilter{log_string}",

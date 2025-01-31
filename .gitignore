@@ -22,3 +22,4 @@ cdk.out
 
 cdk.context.json
 /lan_party_services/discord_bot/app/.env
+/lan_party_services/*/discord_webhook_lambda/*.py
