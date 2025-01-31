@@ -26,7 +26,7 @@ def lambda_handler(event, context):
     with gzip.GzipFile(fileobj=BytesIO(compressed_payload)) as gzipfile:
         log_data = json.loads(gzipfile.read().decode("utf-8"))
 
-
+    skip_message = False
 
     # Extract log events
     for log_event in log_data["logEvents"]:
@@ -43,10 +43,13 @@ def lambda_handler(event, context):
         if '------- Game Initialization -------' in message:
             message = 'Server up is up. Reason: Game Initialization'
         elif 'broadcast: print' in message:
-            match = re.search(r'broadcast: print "([^\\^]+)\^7 entered the game\\n"', message)
+            match = re.search(r'broadcast: print "([^\\^]+)\^7 (entered the game|connected|disconnected)\\n"', message)
             if match:
                 player_name = match.group(1)
-                message = f'{player_name} entered the game'
+                action = match.group(2)
+                message = f'{player_name} {action}'
+            else:
+                skip_message = True
 
         logger.info(f"Log message: {message}")
 
@@ -56,11 +59,13 @@ def lambda_handler(event, context):
         headers = {"Content-Type": "application/json"}
 
         # Send the message to each Discord webhook
-        for webhook_url in webhook_urls:
-            response = http.request(
-                "POST", webhook_url, body=json.dumps(msg), headers=headers, retries=False
-            )
-            logger.info(f"Response status: {response.status}")
-            logger.info(f"Response data: {response.data}")
+        if not skip_message:
+            for webhook_url in webhook_urls:
+                response = http.request(
+                    "POST", webhook_url, body=json.dumps(msg), headers=headers, retries=False
+                )
+                logger.info(f"Response status: {response.status}")
+                logger.info(f"Response data: {response.data}")
 
-    return {"statusCode": 200, "body": json.dumps("Message sent to Discord!")}
+            return {"statusCode": 200, "body": json.dumps("Message sent to Discord!")}
+        return {"statusCode": 200, "body": json.dumps("Message skipped!")}
