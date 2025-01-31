@@ -35,13 +35,13 @@ def lambda_handler(event, context):
         if 'SIGTERM' in message:
             message = 'Server is down: Reason: SIGTERM'
         elif 'UTServerAdmin Initialized' in message:
-            message = 'Server up is up. Reason: UTServerAdmin Initialized'
+            message = 'Server is up. Reason: UTServerAdmin Initialized'
         elif '___New Player Joined -' in message:
             player_info = message.split('___New Player Joined -')[1]
             message = f'{player_info} joined the server'
         # Quake 3 Arena specific message parsing
         if '------- Game Initialization -------' in message:
-            message = 'Server up is up. Reason: Game Initialization'
+            message = 'Server is up. Reason: Game Initialization'
         elif 'signal 15' in message:
             message = 'Server is down: Reason: SIGTERM'
         elif 'broadcast: print' in message:
