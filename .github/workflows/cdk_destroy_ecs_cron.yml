@@ -1,4 +1,4 @@
-name: CDK Destroy All Except Core
+name: Scheduled Destroy - All ECS Services
 
 on:
   schedule:

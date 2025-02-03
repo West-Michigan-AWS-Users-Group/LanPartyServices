@@ -1,6 +1,6 @@
 
         document.addEventListener("DOMContentLoaded", function() {
-            const folders = ['starcraft', 'ut2k4', 'ut99', 'tee_worlds', 'quake3', 'open_red_alert', 'warhammer_40k_speed_freeks', 'bar', 'total_annihilation', 'cnc_generals_zero_hour'];
+            const folders = ['starcraft', 'ut2k4', 'ut99', 'tee_worlds', 'quake3', 'open_red_alert', 'warhammer_40k_speed_freeks', 'nlb', 'bar', 'total_annihilation', 'cnc_generals_zero_hour'];
             const folderList = document.getElementById("folder-list");
     
             // Sort folders alphabetically

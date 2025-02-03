@@ -1,4 +1,4 @@
-name: CDK Destroy Core
+name: Scheduled Destroy - NLB
 
 on:
   schedule:
@@ -40,4 +40,4 @@ jobs:
 
       - name: CDK destroy
         run: |
-          cdk destroy prod-lan-party-services-core --force
+          cdk destroy prod-lan-party-services-nlb --force

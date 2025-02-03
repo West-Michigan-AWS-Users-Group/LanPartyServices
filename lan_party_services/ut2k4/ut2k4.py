@@ -23,20 +23,30 @@ from lan_party_services.core.core import used_azs
 class ut2k4(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-
-        app_group = self.__class__.__name__.capitalize()
+        stack_name_ansi = (
+            self.__class__.__name__.replace("-", "")
+            .replace("_", "")
+            .replace(".", "")
+            .capitalize()
+        )
+        stack_name_parts = self.stack_name.split("-")
+        environment = stack_name_parts[0]
+        app_group = stack_name_ansi
         app_group_l = app_group.lower()
+        # add tags
         Tags.of(self).add("service", app_group)
 
         ### Core stack imports
-        vpc_id = Fn.import_value("VpcId")
-        private_subnet_ids = Fn.import_value("PrivateSubnetIds").split(",")
-        public_subnet_ids = Fn.import_value("PublicSubnetIds").split(",")
-        private_route_table_ids = Fn.import_value("PrivateRouteTableIds").split(",")
-        public_route_table_ids = Fn.import_value("PublicRouteTableIds").split(",")
+        core_import_prefix = f"{environment}Core"
+        nlb_import_prefix = f"{environment}Nlb"
+        vpc_id = Fn.import_value(f"{nlb_import_prefix}VpcId")
+        private_subnet_ids = Fn.import_value(f"{core_import_prefix}PrivateSubnetIds").split(",")
+        public_subnet_ids = Fn.import_value(f"{core_import_prefix}PublicSubnetIds").split(",")
+        private_route_table_ids = Fn.import_value(f"{core_import_prefix}PrivateRouteTableIds").split(",")
+        public_route_table_ids = Fn.import_value(f"{core_import_prefix}PublicRouteTableIds").split(",")
         vpc = ec2.Vpc.from_vpc_attributes(
             self,
-            "CoreVPC",
+            f"{stack_name_ansi}CoreVPC",
             vpc_id=vpc_id,
             availability_zones=used_azs["us-east-2"],
             private_subnet_ids=private_subnet_ids,
@@ -45,28 +55,23 @@ class ut2k4(Stack):
             public_subnet_route_table_ids=public_route_table_ids,
         )
         # Cluster
-        cluster_name = Fn.import_value("LanPartyServersClusterName")
+        cluster_name = Fn.import_value(f"{core_import_prefix}LanPartyServersClusterName")
         cluster = ecs.Cluster.from_cluster_attributes(
             self, cluster_name, cluster_name=cluster_name, vpc=vpc
         )
         # NLB
-        nlb_tg_sg_id = Fn.import_value("NlbTgSGId")
+        nlb_tg_sg_id = Fn.import_value(f"{nlb_import_prefix}NlbTgSGId")
         nlb_tg_security_group = ec2.SecurityGroup.from_security_group_id(
-            self, "ImportedNlbTgSG", nlb_tg_sg_id
+            self, f"{environment}ImportedNlbTgSG", nlb_tg_sg_id
         )
-        nlb_arn = Fn.import_value("PublicNLBArn")
-        nlb_dns_name = Fn.import_value("PublicNLBDnsName")
-        nlb_canonical_hosted_zone_id = Fn.import_value("PublicNLBCanonicalHostedZoneId")
-        nlb_full_name = Fn.import_value("PublicNLBFullName")
-        # nlb = elbv2.NetworkLoadBalancer.from_network_load_balancer_attributes(self, "ImportedNLB",
-        #                                                                       load_balancer_arn=nlb_arn,
-        #                                                                       vpc=vpc,
-        #                                                                       load_balancer_canonical_hosted_zone_id=nlb_canonical_hosted_zone_id,
-        #                                                                       load_balancer_dns_name=nlb_dns_name,
-        #                                                                       load_balancer_full_name=nlb_full_name)
+        nlb_arn = Fn.import_value(f"{nlb_import_prefix}PublicNLBArn")
+        nlb_dns_name = Fn.import_value(f"{nlb_import_prefix}PublicNLBDnsName")
+        nlb_canonical_hosted_zone_id = Fn.import_value(
+            f"{core_import_prefix}PublicNLBCanonicalHostedZoneId"
+        )
         nlb = elbv2.NetworkLoadBalancer.from_network_load_balancer_attributes(
             self,
-            "NLB1",
+            f"{stack_name_ansi}ImportedNLB",
             load_balancer_arn=nlb_arn,
             vpc=vpc,
             load_balancer_canonical_hosted_zone_id=nlb_canonical_hosted_zone_id,
@@ -97,19 +102,19 @@ class ut2k4(Stack):
         # Image
         image = ecr_assets.DockerImageAsset(
             self,
-            f"{app_group}Image",
+            f"{stack_name_ansi}Image",
             directory=os.path.join(os.path.dirname(__file__), "..", app_group_l),
             platform=ecr_assets.Platform.LINUX_AMD64,
         )
         # Logging
         log_group = logs.LogGroup(
-            self, f"{app_group}LogGroup", retention=logs.RetentionDays.ONE_DAY
+            self, f"{stack_name_ansi}LogGroup", retention=logs.RetentionDays.ONE_DAY
         )
 
         # Permissions
         task_role = iam.Role(
             self,
-            f"{app_group}TaskRole",
+            f"{stack_name_ansi}TaskRole",
             assumed_by=iam.ServicePrincipal("ecs-tasks.amazonaws.com"),
             inline_policies={
                 "CloudWatchLogsPolicy": iam.PolicyDocument(
@@ -126,7 +131,7 @@ class ut2k4(Stack):
         # Create a Fargate task definition with shared memory and CPU resources
         task_definition = ecs.FargateTaskDefinition(
             self,
-            f"{app_group}TaskDef",
+            f"{stack_name_ansi}TaskDef",
             task_role=task_role,
             memory_limit_mib=512,
             cpu=256,
@@ -134,7 +139,7 @@ class ut2k4(Stack):
 
         # Sidecar container for health checks - uses busybox to respond to http requests
         health_check_container = task_definition.add_container(
-            "healthcheck",
+            f"{stack_name_ansi}Healthcheck",
             image=ecs.ContainerImage.from_registry("busybox:latest"),
             essential=True,
             command=[
@@ -149,10 +154,10 @@ class ut2k4(Stack):
 
         # Main container
         main_container = task_definition.add_container(
-            f"{app_group_l}-container",
+            f"{stack_name_ansi}Container",
             image=ecs.ContainerImage.from_docker_image_asset(image),
             logging=ecs.LogDriver.aws_logs(
-                stream_prefix=app_group, log_group=log_group
+                stream_prefix=f"{stack_name_ansi}", log_group=log_group
             ),
             command=[
                 "ucc-bin",
@@ -166,7 +171,7 @@ class ut2k4(Stack):
         # Create the Fargate service
         service = ecs.FargateService(
             self,
-            f"{app_group}Service",
+            f"{stack_name_ansi}Service",
             cluster=cluster,
             task_definition=task_definition,
             desired_count=1,
@@ -201,17 +206,17 @@ class ut2k4(Stack):
                 else elbv2.Protocol.TCP
             )
             listener = nlb.add_listener(
-                f"Listener{app_port['port']}",
+                f"{stack_name_ansi}Listener{app_port['port']}",
                 port=app_port["port"],
                 protocol=listener_protocol,
             )
             listener.add_targets(
-                f"FargateServiceTarget{app_port['port']}",
+                f"{stack_name_ansi}FargateServiceTarget{app_port['port']}",
                 port=app_port["port"],
                 protocol=listener_protocol,
                 targets=[
                     service.load_balancer_target(
-                        container_name=f"{app_group_l}-container",
+                        container_name=f"{stack_name_ansi}Container",
                         container_port=app_port["port"],
                         protocol=app_port["protocol"],
                     )
@@ -236,16 +241,16 @@ class ut2k4(Stack):
 
         # Add a DNS record to the zone named grlanparty.info
         zone = route53.HostedZone.from_lookup(
-            self, "Zone", domain_name="grlanparty.info"
+            self, f"{stack_name_ansi}Zone", domain_name="grlanparty.info"
         )
         route53.ARecord(
             self,
-            f"{app_group}AliasRecord",
+            f"{stack_name_ansi}AliasRecord",
             record_name=server_url,
             target=route53.RecordTarget.from_alias(targets.LoadBalancerTarget(nlb)),
             zone=zone,
         )
 
         create_cloudwatch_resources(
-            self, self.stack_name, cluster, service, nlb, log_group, log_strings
+            self, stack_name_ansi, cluster, service, nlb, log_group, log_strings
         )

@@ -12,6 +12,7 @@ on:
           - all
           - info
           - core
+          - nlb
           - quake3
           - ut99
           - ut2k4
@@ -58,6 +59,9 @@ jobs:
           fi
           if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "core" ]; then
             cdk destroy prod-lan-party-services-core --force
+          fi
+          if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "core" ]; then
+            cdk destroy prod-lan-party-services-nlb --force
           fi
           if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "quake3" ]; then
             cdk destroy prod-lan-party-services-quake3 --force

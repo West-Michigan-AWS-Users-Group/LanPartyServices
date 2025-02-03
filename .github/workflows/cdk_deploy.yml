@@ -61,10 +61,12 @@ jobs:
           STACKS=(
             "${ENVIRONMENT}-lan-party-services-info"
             "${ENVIRONMENT}-lan-party-services-core"
+            "${ENVIRONMENT}-lan-party-services-nlb"
             "${ENVIRONMENT}-lan-party-services-quake3"
             "${ENVIRONMENT}-lan-party-services-ut99"
             "${ENVIRONMENT}-lan-party-services-ut2k4"
             "${ENVIRONMENT}-lan-party-services-teeworlds"
+            "${ENVIRONMENT}-lan-party-services-discord-bot"
           )
 
           # Deploy the info stack in us-east-1
@@ -79,18 +81,37 @@ jobs:
           # Deploy the core stack first in us-east-2
           STACK_NAME="${ENVIRONMENT}-lan-party-services-core"
           REGION="us-east-2"
-          CORE_STACK_EXISTS=false
           if aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION; then
             cdk deploy $STACK_NAME --require-approval=never --region $REGION
-            CORE_STACK_EXISTS=true
           else
             echo "Stack $STACK_NAME does not exist in region $REGION. Skipping deployment."
           fi
 
-          # Deploy the remaining stacks in us-east-2 only if the core stack exists
-          if [ "$CORE_STACK_EXISTS" = true ]; then
+          # Deploy the discord-bot stack next in us-east-2 - discord bot runs all the time
+          STACK_NAME="${ENVIRONMENT}-lan-party-services-discord-bot"
+          REGION="us-east-2"
+          NLB_STACK_EXISTS=false
+          if aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION; then
+            cdk deploy $STACK_NAME --require-approval=never --region $REGION
+          else
+            echo "Stack $STACK_NAME does not exist in region $REGION. Skipping deployment."
+          fi
+
+          # Deploy the nlb stack next in us-east-2 - this is conditionally up and scheduled for shutoff via GH Actions
+          STACK_NAME="${ENVIRONMENT}-lan-party-services-nlb"
+          REGION="us-east-2"
+          NLB_STACK_EXISTS=false
+          if aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION; then
+            cdk deploy $STACK_NAME --require-approval=never --region $REGION
+            NLB_STACK_EXISTS=true
+          else
+            echo "Stack $STACK_NAME does not exist in region $REGION. Skipping deployment."
+          fi
+
+          # Deploy the remaining stacks in us-east-2 only if the nlb stack exists
+          if [ "$NLB_STACK_EXISTS" = true ]; then
             for STACK_NAME in "${STACKS[@]}"; do
-              if [[ "$STACK_NAME" != *"info" && "$STACK_NAME" != *"core" ]]; then
+              if [[ "$STACK_NAME" != *"info" && "$STACK_NAME" != *"nlb" ]]; then
                 REGION="us-east-2"
                 if aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION; then
                   cdk deploy $STACK_NAME --require-approval=never --region $REGION

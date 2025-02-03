@@ -21,21 +21,30 @@ from lan_party_services.core.core import used_azs
 class teeworlds(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        # add tags
-        app_group = self.__class__.__name__.capitalize()
-        app_group_l = app_group.lower()
+        stack_name_ansi = (
+            self.__class__.__name__.replace("-", "")
+            .replace("_", "")
+            .replace(".", "")
+            .capitalize()
+        )
+        stack_name_parts = self.stack_name.split("-")
+        environment = stack_name_parts[0]
+        app_group = stack_name_ansi
         app_group_l_hyphen = "tee-worlds"
+        # add tags
         Tags.of(self).add("service", app_group)
 
         ### Core stack imports
-        vpc_id = Fn.import_value("VpcId")
-        private_subnet_ids = Fn.import_value("PrivateSubnetIds").split(",")
-        public_subnet_ids = Fn.import_value("PublicSubnetIds").split(",")
-        private_route_table_ids = Fn.import_value("PrivateRouteTableIds").split(",")
-        public_route_table_ids = Fn.import_value("PublicRouteTableIds").split(",")
+        core_import_prefix = f"{environment}Core"
+        nlb_import_prefix = f"{environment}Nlb"
+        vpc_id = Fn.import_value(f"{nlb_import_prefix}VpcId")
+        private_subnet_ids = Fn.import_value(f"{core_import_prefix}PrivateSubnetIds").split(",")
+        public_subnet_ids = Fn.import_value(f"{core_import_prefix}PublicSubnetIds").split(",")
+        private_route_table_ids = Fn.import_value(f"{core_import_prefix}PrivateRouteTableIds").split(",")
+        public_route_table_ids = Fn.import_value(f"{core_import_prefix}PublicRouteTableIds").split(",")
         vpc = ec2.Vpc.from_vpc_attributes(
             self,
-            "CoreVPC",
+            f"{stack_name_ansi}CoreVPC",
             vpc_id=vpc_id,
             availability_zones=used_azs["us-east-2"],
             private_subnet_ids=private_subnet_ids,
@@ -44,21 +53,23 @@ class teeworlds(Stack):
             public_subnet_route_table_ids=public_route_table_ids,
         )
         # Cluster
-        cluster_name = Fn.import_value("LanPartyServersClusterName")
+        cluster_name = Fn.import_value(f"{core_import_prefix}LanPartyServersClusterName")
         cluster = ecs.Cluster.from_cluster_attributes(
             self, cluster_name, cluster_name=cluster_name, vpc=vpc
         )
         # NLB
-        nlb_tg_sg_id = Fn.import_value("NlbTgSGId")
+        nlb_tg_sg_id = Fn.import_value(f"{nlb_import_prefix}NlbTgSGId")
         nlb_tg_security_group = ec2.SecurityGroup.from_security_group_id(
-            self, "ImportedNlbTgSG", nlb_tg_sg_id
+            self, f"{environment}ImportedNlbTgSG", nlb_tg_sg_id
         )
-        nlb_arn = Fn.import_value("PublicNLBArn")
-        nlb_dns_name = Fn.import_value("PublicNLBDnsName")
-        nlb_canonical_hosted_zone_id = Fn.import_value("PublicNLBCanonicalHostedZoneId")
+        nlb_arn = Fn.import_value(f"{nlb_import_prefix}PublicNLBArn")
+        nlb_dns_name = Fn.import_value(f"{nlb_import_prefix}PublicNLBDnsName")
+        nlb_canonical_hosted_zone_id = Fn.import_value(
+            f"{core_import_prefix}PublicNLBCanonicalHostedZoneId"
+        )
         nlb = elbv2.NetworkLoadBalancer.from_network_load_balancer_attributes(
             self,
-            "ImportedNLB",
+            f"{stack_name_ansi}ImportedNLB",
             load_balancer_arn=nlb_arn,
             vpc=vpc,
             load_balancer_canonical_hosted_zone_id=nlb_canonical_hosted_zone_id,
@@ -74,13 +85,13 @@ class teeworlds(Stack):
         image_name = "ich777/teeworldsserver"
         # Logging
         log_group = logs.LogGroup(
-            self, f"{app_group}LogGroup", retention=logs.RetentionDays.ONE_DAY
+            self, f"{stack_name_ansi}LogGroup", retention=logs.RetentionDays.ONE_DAY
         )
 
         # Permissions
         task_role = iam.Role(
             self,
-            f"{app_group}TaskRole",
+            f"{stack_name_ansi}TaskRole",
             assumed_by=iam.ServicePrincipal("ecs-tasks.amazonaws.com"),
             inline_policies={
                 "CloudWatchLogsPolicy": iam.PolicyDocument(
@@ -96,12 +107,12 @@ class teeworlds(Stack):
 
         # Create a Fargate service with a sidecar container for health checks
         task_definition = ecs.FargateTaskDefinition(
-            self, f"{app_group}TaskDef", task_role=task_role
+            self, f"{stack_name_ansi}TaskDef", task_role=task_role
         )
 
         # Sidecar container for health checks - uses busybox to respond to http requests
         health_check_container = task_definition.add_container(
-            "healthcheck",
+            f"{stack_name_ansi}Healthcheck",
             image=ecs.ContainerImage.from_registry("busybox:latest"),
             memory_limit_mib=128,
             essential=True,
@@ -117,18 +128,18 @@ class teeworlds(Stack):
 
         # Main container
         main_container = task_definition.add_container(
-            f"{app_group_l}-container",
+            f"{stack_name_ansi}Container",
             image=ecs.ContainerImage.from_registry(image_name),
             memory_limit_mib=256,
             logging=ecs.LogDriver.aws_logs(
-                stream_prefix=f"{app_group}", log_group=log_group
+                stream_prefix=f"{stack_name_ansi}", log_group=log_group
             ),
         )
 
         # Create the Fargate service
         service = ecs.FargateService(
             self,
-            f"{app_group}Service",
+            f"{stack_name_ansi}Service",
             cluster=cluster,
             task_definition=task_definition,
             desired_count=1,
@@ -148,15 +159,17 @@ class teeworlds(Stack):
 
         # Add a udp listener
         udp_listener = nlb.add_listener(
-            f"UDPListener{app_port}", port=app_port, protocol=elbv2.Protocol.UDP
+            f"{stack_name_ansi}UDPListener{app_port}",
+            port=app_port,
+            protocol=elbv2.Protocol.UDP,
         )
         udp_listener.add_targets(
-            f"FargateServiceTargetUDP{app_port}",
+            f"{stack_name_ansi}FargateServiceTargetUDP{app_port}",
             port=app_port,
             protocol=elbv2.Protocol.UDP,
             targets=[
                 service.load_balancer_target(
-                    container_name=f"{app_group_l}-container",
+                    container_name=f"{stack_name_ansi}Container",
                     container_port=app_port,
                     protocol=ecs.Protocol.UDP,
                 )
@@ -181,11 +194,11 @@ class teeworlds(Stack):
 
         # Add a DNS record to the zone named grlanparty.info
         zone = route53.HostedZone.from_lookup(
-            self, "Zone", domain_name="grlanparty.info"
+            self, f"{stack_name_ansi}Zone", domain_name="grlanparty.info"
         )
         route53.ARecord(
             self,
-            f"{app_group}AliasRecord",
+            f"{stack_name_ansi}AliasRecord",
             record_name=server_url,
             target=route53.RecordTarget.from_alias(targets.LoadBalancerTarget(nlb)),
             zone=zone,

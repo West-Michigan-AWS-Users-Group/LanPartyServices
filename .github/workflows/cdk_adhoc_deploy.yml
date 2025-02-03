@@ -12,10 +12,12 @@ on:
           - all
           - info
           - core
+          - nlb
           - quake3
           - ut99
           - ut2k4
           - teeworlds
+          - discord-bot
 
 jobs:
   deploy:
@@ -71,6 +73,9 @@ jobs:
           if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "core" ]; then
             cdk deploy ${ENVIRONMENT}-lan-party-services-core --require-approval=never --region us-east-2
           fi
+          if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "nlb" ]; then
+            cdk deploy ${ENVIRONMENT}-lan-party-services-nlb --require-approval=never --region us-east-2
+          fi
           if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "quake3" ]; then
             cdk deploy ${ENVIRONMENT}-lan-party-services-quake3 --require-approval=never --region us-east-2
           fi
@@ -82,4 +87,7 @@ jobs:
           fi
           if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "teeworlds" ]; then
             cdk deploy ${ENVIRONMENT}-lan-party-services-teeworlds --require-approval=never --region us-east-2
+          fi
+          if [ "${{ github.event.inputs.stack }}" == "all" ] || [ "${{ github.event.inputs.stack }}" == "discord-bot" ]; then
+            cdk deploy ${ENVIRONMENT}-lan-party-services-discord-bot --require-approval=never --region us-east-2
           fi
