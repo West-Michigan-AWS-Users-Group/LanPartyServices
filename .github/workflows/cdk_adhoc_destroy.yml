@@ -1,4 +1,4 @@
-name: CDK Destroy
+name: CDK Adhoc Destroy
 
 on:
   workflow_dispatch:
