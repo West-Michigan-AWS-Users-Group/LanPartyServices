@@ -1,6 +1,4 @@
 import os
-import uuid
-from jinja2 import Environment, FileSystemLoader
 import re
 from typing import List
 
@@ -14,6 +12,7 @@ from aws_cdk import (
     aws_ssm as ssm,
 )
 from aws_cdk.aws_logs import FilterPattern
+from jinja2 import Environment, FileSystemLoader
 
 
 def create_cloudwatch_resources(

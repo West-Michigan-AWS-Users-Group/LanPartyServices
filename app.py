@@ -1,6 +1,5 @@
 import os
 import subprocess
-import boto3
 import aws_cdk as cdk
 
 from lan_party_services.core.core import Core as core

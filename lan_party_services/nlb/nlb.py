@@ -6,6 +6,7 @@ from aws_cdk import (
     aws_elasticloadbalancingv2 as elbv2,
 )
 from constructs import Construct
+
 from lan_party_services.core.core import used_azs
 
 
@@ -18,24 +19,40 @@ class Nlb(Stack):
             .replace(".", "")
             .capitalize()
         )
-        environment = self.node.try_get_context("environment")
-        vpc_stack_name_ansi = f"{environment}Core".replace("-", "").replace("_", "").replace(".", "").capitalize()
-
-        vpc_id = Fn.import_value(f"{vpc_stack_name_ansi}VpcId")
-        public_subnet_ids = Fn.import_value(f"{vpc_stack_name_ansi}PublicSubnetIds").split(",")
-        private_subnet_ids = Fn.import_value(f"{vpc_stack_name_ansi}PrivateSubnetIds").split(",")
-        public_route_table_ids = Fn.import_value(f"{vpc_stack_name_ansi}PublicRouteTableIds").split(",")
-        private_route_table_ids = Fn.import_value(f"{vpc_stack_name_ansi}PrivateRouteTableIds").split(",")
+        stack_name_parts = self.stack_name.split("-")
+        environment = stack_name_parts[0]
+        app_group = stack_name_ansi
+        app_group_l = app_group.lower()
+        vpc_stack_name_ansi = (
+            f"{environment}Core".replace("-", "")
+            .replace("_", "")
+            .replace(".", "")
+            .capitalize()
+        )
+        core_import_prefix = f"{environment}Core"
+        vpc_id = Fn.import_value(f"{core_import_prefix}VpcId")
+        private_subnet_ids = Fn.import_value(
+            f"{core_import_prefix}PrivateSubnetIds"
+        ).split(",")
+        public_subnet_ids = Fn.import_value(
+            f"{core_import_prefix}PublicSubnetIds"
+        ).split(",")
+        private_route_table_ids = Fn.import_value(
+            f"{core_import_prefix}PrivateRouteTableIds"
+        ).split(",")
+        public_route_table_ids = Fn.import_value(
+            f"{core_import_prefix}PublicRouteTableIds"
+        ).split(",")
 
         vpc = ec2.Vpc.from_vpc_attributes(
             self,
-            f"{environment}{vpc_stack_name_ansi}CoreVPC",
+            f"{stack_name_ansi}CoreVPC",
             vpc_id=vpc_id,
             availability_zones=used_azs["us-east-2"],
-            public_subnet_ids=public_subnet_ids,
             private_subnet_ids=private_subnet_ids,
-            public_subnet_route_table_ids=public_route_table_ids,
+            public_subnet_ids=public_subnet_ids,
             private_subnet_route_table_ids=private_route_table_ids,
+            public_subnet_route_table_ids=public_route_table_ids,
         )
 
         # Create a security group for the NLB target group

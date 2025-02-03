@@ -1,5 +1,3 @@
-import os
-
 from aws_cdk import (
     Duration,
     Fn,
@@ -37,11 +35,19 @@ class teeworlds(Stack):
         ### Core stack imports
         core_import_prefix = f"{environment}Core"
         nlb_import_prefix = f"{environment}Nlb"
-        vpc_id = Fn.import_value(f"{nlb_import_prefix}VpcId")
-        private_subnet_ids = Fn.import_value(f"{core_import_prefix}PrivateSubnetIds").split(",")
-        public_subnet_ids = Fn.import_value(f"{core_import_prefix}PublicSubnetIds").split(",")
-        private_route_table_ids = Fn.import_value(f"{core_import_prefix}PrivateRouteTableIds").split(",")
-        public_route_table_ids = Fn.import_value(f"{core_import_prefix}PublicRouteTableIds").split(",")
+        vpc_id = Fn.import_value(f"{core_import_prefix}VpcId")
+        private_subnet_ids = Fn.import_value(
+            f"{core_import_prefix}PrivateSubnetIds"
+        ).split(",")
+        public_subnet_ids = Fn.import_value(
+            f"{core_import_prefix}PublicSubnetIds"
+        ).split(",")
+        private_route_table_ids = Fn.import_value(
+            f"{core_import_prefix}PrivateRouteTableIds"
+        ).split(",")
+        public_route_table_ids = Fn.import_value(
+            f"{core_import_prefix}PublicRouteTableIds"
+        ).split(",")
         vpc = ec2.Vpc.from_vpc_attributes(
             self,
             f"{stack_name_ansi}CoreVPC",
@@ -53,7 +59,9 @@ class teeworlds(Stack):
             public_subnet_route_table_ids=public_route_table_ids,
         )
         # Cluster
-        cluster_name = Fn.import_value(f"{core_import_prefix}LanPartyServersClusterName")
+        cluster_name = Fn.import_value(
+            f"{core_import_prefix}LanPartyServersClusterName"
+        )
         cluster = ecs.Cluster.from_cluster_attributes(
             self, cluster_name, cluster_name=cluster_name, vpc=vpc
         )
@@ -65,7 +73,7 @@ class teeworlds(Stack):
         nlb_arn = Fn.import_value(f"{nlb_import_prefix}PublicNLBArn")
         nlb_dns_name = Fn.import_value(f"{nlb_import_prefix}PublicNLBDnsName")
         nlb_canonical_hosted_zone_id = Fn.import_value(
-            f"{core_import_prefix}PublicNLBCanonicalHostedZoneId"
+            f"{nlb_import_prefix}PublicNLBCanonicalHostedZoneId"
         )
         nlb = elbv2.NetworkLoadBalancer.from_network_load_balancer_attributes(
             self,

@@ -1,9 +1,9 @@
+import os
+
 from aws_cdk import (
-    Aws,
     CfnOutput,
     Duration,
     RemovalPolicy,
-    Size,
     Stack,
     Tags,
     aws_certificatemanager as certificatemanager,
@@ -16,7 +16,6 @@ from aws_cdk import (
     aws_s3_deployment as s3_deployment,
 )
 from constructs import Construct
-import os
 
 
 class info(Stack):

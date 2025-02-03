@@ -3,10 +3,11 @@
 # In order to learn more about how to use the library, please head over to our documentation:
 # https://interactions-py.github.io/interactions.py/
 
+import logging
+import os
+
 # The first thing you need to do is import the library.
 import interactions
-import os
-import logging
 
 # Now, let's create an instance of a bot.
 # When you make a bot, we refer to it as the "client."
