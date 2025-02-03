@@ -121,6 +121,7 @@ class DiscordBot(Stack):
             logging=ecs.LogDriver.aws_logs(
                 stream_prefix=app_group, log_group=log_group
             ),
+            environment={"ENVIRONMENT": environment},
             secrets={
                 "DISCORD_BOT_CLIENT_TOKEN": ecs.Secret.from_ssm_parameter(
                     discord_bot_client_token

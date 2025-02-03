@@ -6,6 +6,8 @@
 import logging
 import os
 
+ecs_environment = os.getenv("ENVIRONMENT")
+
 # The first thing you need to do is import the library.
 import interactions
 
@@ -65,7 +67,8 @@ async def name_this_however_you_want(message_create: interactions.events.Message
 # Context is what we call the described information given from an interaction response, what comes from a command.
 # The context object in this case is a class for commands, but can also be one for components if used that way.
 @interactions.slash_command(
-    name="hello-world", description='A command that says "hello world!"'
+    name="hello-world",
+    description='A command that says "hello world!" and returns the environment.',
 )
 async def hello_world(ctx: interactions.SlashContext):
     # "ctx" is an abbreviation of the context object.
@@ -73,14 +76,29 @@ async def hello_world(ctx: interactions.SlashContext):
 
     # Now, let's send back a response.
     # The interaction response should be the LAST thing you do when a command is ran.
-    await ctx.send("hello world from the running botso!")
+    await ctx.send(f"Hello, I am the LAN party bot running in the {ecs_environment}!")
 
     # However, any code you put after a response will still execute unless you prevent it from doing so.
     logger.info("we ran.")
 
 
+@interactions.slash_command(
+    name="info",
+    description="Command that provides basic information about this bot to the user.",
+)
+async def info(ctx: interactions.SlashContext):
+    await ctx.send(
+        f"Hello! I am the LAN Party Bot. I am used to provide information on games and assets used in a part setting. "
+        f"I can help with starting or stopping servers, as well as providing links to game information on how to "
+        f"play. The available commands are: /server-info, /start, /stop, /game-info"
+    )
+
+    # However, any code you put after a response will still execute unless you prevent it from doing so.
+    logger.info("info command ran.")
+
+
 # After we've declared all of the bot code we want, we need to tell the library to run our bot.
-# In this example, we've decided to do some things in a different way without explicitly saying it:
+# In this example, we've decided to do some things in a different way without explicitly d saying it:
 
 # - we'll be syncing the commands automatically.
 #   if you want to do this manually, you can do it by passing disable_sync=False in the Client
