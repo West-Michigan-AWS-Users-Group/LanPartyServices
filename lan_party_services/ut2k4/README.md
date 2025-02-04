@@ -9,9 +9,9 @@ The next iteration of the legendary FPS Arena shooter, Unreal Tournament, adding
 ![Windows](https://img.icons8.com/color/48/000000/windows-10.png) ![Mac](https://img.icons8.com/color/48/000000/mac-os.png)
 
 ### Server Info
-`ut2k4.grlanparty.info`
+`ut2k4.grlanparty.info` <span id="server-status"></span>
 
-This server has a number of mutators listed [here](https://github.com/LacledesLAN/gamesvr-ut2004). 
+This server has a number of mutators listed [here](https://github.com/LacledesLAN/gamesvr-ut2004).
 
 ### Installation
 
@@ -26,7 +26,7 @@ Note: This game is not natively supported on Mac M1. You will need to use Whiske
 
 - Create a new bottle in Whiskey, unzip the contents of the ut2004 installer into the bottle's C:\Program Files (x86) directory.
 
-- Edit the bottle's registry to include UT2004.reg file key included in the zip file. 
+- Edit the bottle's registry to include UT2004.reg file key included in the zip file.
 
 - Launch the game from Whisky.
 
@@ -34,3 +34,25 @@ Note: This game is not natively supported on Mac M1. You will need to use Whiske
 - Download the UT2k4 installer [here](https://archive.org/details/ut2004-3369).
 
 - Launch the 64 bit version of the game.
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const statusElement = document.getElementById("server-status");
+
+    fetch("https://api.grlanparty.info/status?stack_name=ut2k4")
+        .then(response => response.json())
+        .then(data => {
+            const circle = document.createElement("span");
+            circle.style.display = "inline-block";
+            circle.style.width = "10px";
+            circle.style.height = "10px";
+            circle.style.borderRadius = "50%";
+            circle.style.marginLeft = "5px";
+            circle.style.backgroundColor = data.status ? "green" : "grey";
+            statusElement.appendChild(circle);
+        })
+        .catch(error => {
+            console.error("Error fetching server status:", error);
+        });
+});
+</script>

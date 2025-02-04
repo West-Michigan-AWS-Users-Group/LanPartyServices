@@ -45,10 +45,11 @@ class ApiGateway(Stack):
             environment={"STACK_NAME_PREFIX": f"{environment}-lan-party-services-"},
         )
 
-        # Attach IAM policy to allow reading CloudWatch metrics
+        # Attach IAM policy to allow reading ECS clusters and services
         lambda_function.add_to_role_policy(
             iam.PolicyStatement(
-                actions=["cloudwatch:GetMetricStatistics"], resources=["*"]
+                actions=["ecs:Describe*", "ecs:List*"],
+                resources=["*"],
             )
         )
 
@@ -66,6 +67,10 @@ class ApiGateway(Stack):
             "Status",
             rest_api_name="Status Service",
             description="This service returns status of ECS tasks. (True, False)",
+            default_cors_preflight_options={
+                "allow_origins": ["https://grlanparty.info", "http://localhost"],
+                "allow_methods": apigateway.Cors.ALL_METHODS,
+            },
         )
 
         # Define the /status resource

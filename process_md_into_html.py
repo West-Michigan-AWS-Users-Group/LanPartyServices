@@ -21,6 +21,8 @@ def convert_md_to_html(root_dir: str, target_dir: str) -> None:
         # Skip the discord_bot directory
         if "discord_bot" in subdir:
             continue
+        if "api" in subdir:
+            continue
 
         if "README.md" in files:
             readme_path = os.path.join(subdir, "README.md")
@@ -57,7 +59,6 @@ def render_script_js(root_dir: str, script_path: str) -> None:
     :param root_dir: The root directory to search for folders.
     :param script_path: The path to the script.js file to be updated.
     """
-    # Get the list of folders excluding 'core' and 'info_mirror'
     folders: List[str] = [
         d
         for d in os.listdir(root_dir)

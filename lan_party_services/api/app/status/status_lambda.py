@@ -1,16 +1,21 @@
 import os
 import boto3
-import datetime
-from datetime import timedelta
 import json
+import logging
+
+# Configure logging
+logger = logging.getLogger()
 
 
 def handler(event, context):
+    logger.info("Received event: %s", json.dumps(event))
+
     # Check if queryStringParameters and stack_name are present in the event
     if (
         "queryStringParameters" not in event
         or "stack_name" not in event["queryStringParameters"]
     ):
+        logger.error("Missing stack_name parameter")
         return {
             "statusCode": 400,
             "body": json.dumps({"error": "Missing stack_name parameter"}),
@@ -18,28 +23,33 @@ def handler(event, context):
 
     stack_name = event["queryStringParameters"]["stack_name"]
     full_stack_name = os.environ["STACK_NAME_PREFIX"] + stack_name
+    logger.info("Full stack name: %s", full_stack_name)
 
-    cloudwatch = boto3.client("cloudwatch")
     ecs = boto3.client("ecs")
 
-    # Query CloudWatch for the running task count metric
-    response = cloudwatch.get_metric_statistics(
-        Namespace="AWS/ECS",
-        MetricName="RunningTaskCount",
-        Dimensions=[{"Name": "ClusterName", "Value": full_stack_name}],
-        StartTime=datetime.datetime.utcnow() - timedelta(minutes=5),
-        EndTime=datetime.datetime.utcnow(),
-        Period=300,
-        Statistics=["Average"],
-    )
+    # List all ECS clusters
+    clusters_response = ecs.list_clusters()
+    cluster_arns = clusters_response["clusterArns"]
 
-    running_task_count = 0
-    if response["Datapoints"]:
-        running_task_count = response["Datapoints"][0]["Average"]
+    # Filter clusters containing the specified parameter
+    filtered_clusters = [arn for arn in cluster_arns if 'core' in arn]
+
+    # Check if any services in the filtered clusters contain the specified parameter
+    for cluster_arn in filtered_clusters:
+        logger.info("Checking cluster: %s", cluster_arn)
+        services_response = ecs.list_services(cluster=cluster_arn)
+        service_arns = services_response["serviceArns"]
+        logger.info("Services in cluster %s: %s", cluster_arn, service_arns)
+        filtered_services = [arn for arn in service_arns if stack_name in arn]
+        logger.info("Filtered services in cluster %s: %s", cluster_arn, filtered_services)
+        if filtered_services:
+            logger.info("Found matching services in cluster %s", cluster_arn)
+            return {
+                "statusCode": 200,
+                "body": json.dumps({"result": True}),
+            }
 
     return {
         "statusCode": 200,
-        "body": json.dumps(
-            {"stack_name": stack_name, "running_task_count": running_task_count}
-        ),
+        "body": json.dumps({"result": False}),
     }
