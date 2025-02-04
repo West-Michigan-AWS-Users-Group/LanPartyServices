@@ -209,7 +209,9 @@ async def server_info(
                 status_emoji: str = "🟢" if server_online else "🔴"
                 status_message: str = "online" if server_online else "offline"
                 await ctx.send(
-                    f"The server for {game_name} is {status_message} {status_emoji}.\n Server URL: {server_url}\n More info: {info_link}"
+                    f"The server for {game_name} is {status_message} {status_emoji}.\n " 
+                    f"Server URL: {server_url}\n "
+                    f"More info: {info_link}"
                 )
             else:
                 await ctx.send(f"Error fetching server status for {game_name}.")
