@@ -18,6 +18,11 @@ def handler(event, context):
         logger.error("Missing stack_name parameter")
         return {
             "statusCode": 400,
+            "headers": {
+                "Access-Control-Allow-Origin": "*",  # Allow all origins
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "OPTIONS,GET",
+            },
             "body": json.dumps({"error": "Missing stack_name parameter"}),
         }
 
@@ -32,7 +37,7 @@ def handler(event, context):
     cluster_arns = clusters_response["clusterArns"]
 
     # Filter clusters containing the specified parameter
-    filtered_clusters = [arn for arn in cluster_arns if 'core' in arn]
+    filtered_clusters = [arn for arn in cluster_arns if "core" in arn]
 
     # Check if any services in the filtered clusters contain the specified parameter
     for cluster_arn in filtered_clusters:
@@ -41,15 +46,27 @@ def handler(event, context):
         service_arns = services_response["serviceArns"]
         logger.info("Services in cluster %s: %s", cluster_arn, service_arns)
         filtered_services = [arn for arn in service_arns if stack_name in arn]
-        logger.info("Filtered services in cluster %s: %s", cluster_arn, filtered_services)
+        logger.info(
+            "Filtered services in cluster %s: %s", cluster_arn, filtered_services
+        )
         if filtered_services:
             logger.info("Found matching services in cluster %s", cluster_arn)
             return {
                 "statusCode": 200,
+                "headers": {
+                    "Access-Control-Allow-Origin": "*",  # Allow all origins
+                    "Access-Control-Allow-Headers": "Content-Type",
+                    "Access-Control-Allow-Methods": "OPTIONS,GET",
+                },
                 "body": json.dumps({"result": True}),
             }
 
     return {
         "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Origin": "*",  # Allow all origins
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Methods": "OPTIONS,GET",
+        },
         "body": json.dumps({"result": False}),
     }

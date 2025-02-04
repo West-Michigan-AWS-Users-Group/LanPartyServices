@@ -46,13 +46,14 @@ document.addEventListener("DOMContentLoaded", function() {
     fetch("https://api.grlanparty.info/status?stack_name=ut2k4")
         .then(response => response.json())
         .then(data => {
+            console.log("Response data:", data);
             const circle = document.createElement("span");
             circle.style.display = "inline-block";
             circle.style.width = "10px";
             circle.style.height = "10px";
             circle.style.borderRadius = "50%";
             circle.style.marginLeft = "5px";
-            circle.style.backgroundColor = data.status ? "green" : "grey";
+            circle.style.backgroundColor = data.result === "true" ? "green" : "grey";
             statusElement.appendChild(circle);
         })
         .catch(error => {

@@ -66,7 +66,7 @@ def render_script_js(root_dir: str, script_path: str) -> None:
         for d in os.listdir(root_dir)
         if os.path.isdir(os.path.join(root_dir, d))
         and d
-        not in ["__pycache__", "core", "info_mirror", "common", "discord_bot", "api"]
+        not in ["__pycache__", "core", "info_mirror", "common", "discord_bot", "api", 'nlb']
     ]
 
     # JavaScript code to be written to the script.js file

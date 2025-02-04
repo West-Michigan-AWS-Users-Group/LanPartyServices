@@ -6,6 +6,29 @@
 <h3>Supported Platforms</h3>
 <p><img alt="Windows" src="https://img.icons8.com/color/48/000000/windows-10.png" /> <img alt="Mac" src="https://img.icons8.com/color/48/000000/mac-os.png" /> <img alt="Linux" src="https://img.icons8.com/color/48/000000/linux.png" /></p>
 <h3>Server Info</h3>
-<p><code>tee-worlds.grlanparty.info:8303</code></p>
+<p><code>tee-worlds.grlanparty.info:8303</code> <span id="server-status"></span></p>
 <h3>Installation</h3>
-<p>Teeworlds is available as a standalone <a href="https://www.teeworlds.com/?page=downloads">installer</a> and on <a href="https://store.steampowered.com/app/380840/Teeworlds/?curator_clanid=6859938&amp;curator_listid=48389">Steam</a>.</p></body></html>
+<p>Teeworlds is available as a standalone <a href="https://www.teeworlds.com/?page=downloads">installer</a> and on <a href="https://store.steampowered.com/app/380840/Teeworlds/?curator_clanid=6859938&amp;curator_listid=48389">Steam</a>.</p>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const statusElement = document.getElementById("server-status");
+
+    fetch("https://api.grlanparty.info/status?stack_name=teeworlds")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Response data:", data);
+            const circle = document.createElement("span");
+            circle.style.display = "inline-block";
+            circle.style.width = "10px";
+            circle.style.height = "10px";
+            circle.style.borderRadius = "50%";
+            circle.style.marginLeft = "5px";
+            circle.style.backgroundColor = data.result === true ? "green" : "grey";
+            statusElement.appendChild(circle);
+        })
+        .catch(error => {
+            console.error("Error fetching server status:", error);
+        });
+});
+</script>
+<p></body></html></p></body></html>

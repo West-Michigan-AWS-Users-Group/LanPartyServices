@@ -10,12 +10,33 @@ Open source port of Command and Conquer: Red Alert and classic Westwood RTS engi
 
 
 ### Server Info
-`openra.grlanparty.info`
+`openra.grlanparty.info` <span id="server-status"></span>
 
 Running in [this](https://github.com/OpenRA/OpenRA/wiki/Dedicated-Server) docker container image.
 
 ### Installation
 Download and install the game from the [official site](https://www.openra.net/download/). Follow the instructions for your respective platform.
 
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const statusElement = document.getElementById("server-status");
 
+    fetch("https://api.grlanparty.info/status?stack_name=openra")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Response data:", data);
+            const circle = document.createElement("span");
+            circle.style.display = "inline-block";
+            circle.style.width = "10px";
+            circle.style.height = "10px";
+            circle.style.borderRadius = "50%";
+            circle.style.marginLeft = "5px";
+            circle.style.backgroundColor = data.result === true ? "green" : "grey";
+            statusElement.appendChild(circle);
+        })
+        .catch(error => {
+            console.error("Error fetching server status:", error);
+        });
+});
+</script></body></html>
 

@@ -5,7 +5,7 @@
 <h3>Supported Platforms</h3>
 <p><img alt="Windows" src="https://img.icons8.com/color/48/000000/windows-10.png" /> <img alt="Mac" src="https://img.icons8.com/color/48/000000/mac-os.png" /> <img alt="Linux" src="https://img.icons8.com/color/48/000000/linux.png" /></p>
 <h3>Server Info</h3>
-<p><code>quake3.grlanparty.info</code></p>
+<p><code>quake3.grlanparty.info</code> <span id="server-status"></span></p>
 <p>This container has the following modes:</p>
 <p><strong>Vanilla:</strong>
 - FFA Deathmatch
@@ -26,4 +26,27 @@
 <p>Download pak0.pk3 <a href="https://grlanparty.info/assets/pak0.pk3">here</a> and place into your <code>quake3/baseq3/pak0.pk3</code> path.</p>
 <h4>Steam</h4>
 <p>Quake 3 is also available on <a href="https://store.steampowered.com/app/2200/Quake_III_Arena/">Steam</a>. The Steam client works
-just as fine as any other client versions provided by IoQuake3. </p></body></html>
+just as fine as any other client versions provided by IoQuake3. </p>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const statusElement = document.getElementById("server-status");
+
+    fetch("https://api.grlanparty.info/status?stack_name=quake3")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Response data:", data);
+            const circle = document.createElement("span");
+            circle.style.display = "inline-block";
+            circle.style.width = "10px";
+            circle.style.height = "10px";
+            circle.style.borderRadius = "50%";
+            circle.style.marginLeft = "5px";
+            circle.style.backgroundColor = data.result === true ? "green" : "grey";
+            statusElement.appendChild(circle);
+        })
+        .catch(error => {
+            console.error("Error fetching server status:", error);
+        });
+});
+</script>
+<p></body></html></p></body></html>
