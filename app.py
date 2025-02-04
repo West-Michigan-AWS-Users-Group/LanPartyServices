@@ -2,6 +2,7 @@ import os
 import subprocess
 import aws_cdk as cdk
 
+from lan_party_services.api.api import ApiGateway as api
 from lan_party_services.core.core import Core as core
 from lan_party_services.nlb.nlb import Nlb as nlb
 from lan_party_services.discord_bot.discord_bot import DiscordBot as discord_bot
@@ -30,6 +31,7 @@ env_us_east_2 = cdk.Environment(account=account, region="us-east-2")
 app = cdk.App()
 
 # Define stacks with the appropriate env parameter and prefix
+api(app, f"{environment}-{prefix}-api", env=env_us_east_2)
 info(app, f"{environment}-{prefix}-info", env=env_us_east_1)
 core(app, f"{environment}-{prefix}-core", env=env_us_east_2)
 nlb(app, f"{environment}-{prefix}-nlb", env=env_us_east_2)

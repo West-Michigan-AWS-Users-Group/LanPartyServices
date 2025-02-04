@@ -78,7 +78,16 @@ jobs:
             echo "Stack $STACK_NAME does not exist in region $REGION. Skipping deployment."
           fi
 
-          # Deploy the core stack first in us-east-2
+          # Deploy the api stack in us-east-2
+          STACK_NAME="${ENVIRONMENT}-lan-party-services-api"
+          REGION="us-east-2"
+          if aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION; then
+            cdk deploy $STACK_NAME --require-approval=never --region $REGION
+          else
+            echo "Stack $STACK_NAME does not exist in region $REGION. Skipping deployment."
+          fi
+
+          # Deploy the core stack in us-east-2
           STACK_NAME="${ENVIRONMENT}-lan-party-services-core"
           REGION="us-east-2"
           if aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION; then
