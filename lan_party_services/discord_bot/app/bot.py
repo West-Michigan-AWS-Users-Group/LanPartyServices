@@ -188,7 +188,9 @@ async def server_info(
     server_status_url: Optional[str] = game_info.get("server_status_url")
     server_url: f"{game_info.get('stack_name', game_name)}.grlanparty.info"
     stack_name: str = game_info.get("stack_name", game_name)
-    info_link: str = game_info.get("info_link", f"https://grlanparty.info/{stack_name}/index.html")
+    info_link: str = game_info.get(
+        "info_link", f"https://grlanparty.info/{stack_name}/index.html"
+    )
 
     if not server_status_url:
         await ctx.send(
