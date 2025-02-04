@@ -19,51 +19,51 @@ discord_bot_client_token: Optional[str] = os.getenv("DISCORD_BOT_CLIENT_TOKEN")
 # Featured games dictionary
 featured_games: dict = {
     "tee-worlds": {
-        "info_link": "https://grlanparty.info/tee-world",
+        "info_link": "https://grlanparty.info/tee-world/index.html",
         "server_status_url": "https://api.grlanparty.info/status?stack_name=teeworlds",
         "description": "A fast-paced online multiplayer platformer.",
         "stack_name": "teeworlds",
     },
     "quake3": {
-        "info_link": "https://grlanparty.info/quake3",
+        "info_link": "https://grlanparty.info/quake3/index.html",
         "server_status_url": "https://api.grlanparty.info/status?stack_name=quake3",
         "description": "A first-person shooter game.",
         "stack_name": "quake3",
     },
     "ut99": {
-        "info_link": "https://grlanparty.info/ut99",
+        "info_link": "https://grlanparty.info/ut99/index.html",
         "server_status_url": "https://api.grlanparty.info/status?stack_name=ut99",
         "description": "A classic first-person shooter game.",
         "stack_name": "ut99",
     },
     "ut2k4": {
-        "info_link": "https://grlanparty.info/ut2k4",
+        "info_link": "https://grlanparty.info/ut2k4/index.html",
         "server_status_url": "https://api.grlanparty.info/status?stack_name=ut2k4",
         "description": "A futuristic first-person shooter game.",
         "stack_name": "ut2k4",
     },
     "bar": {
-        "info_link": "https://grlanparty.info/bar",
+        "info_link": "https://grlanparty.info/bar/index.html",
         "description": "A real-time strategy game.",
     },
     "cnc_open_ra": {
-        "info_link": "https://grlanparty.info/cnc_open_ra",
+        "info_link": "https://grlanparty.info/cnc_open_ra/index.html",
         "description": "A real-time strategy game based on Command & Conquer.",
     },
     "cnc_generals_zero_hour": {
-        "info_link": "https://grlanparty.info/cnc_generals_zero_hour",
+        "info_link": "https://grlanparty.info/cnc_generals_zero_hour/index.html",
         "description": "An expansion pack for Command & Conquer: Generals.",
     },
     "total_annihilation": {
-        "info_link": "https://grlanparty.info/total_annihilation",
+        "info_link": "https://grlanparty.info/total_annihilation/index.html",
         "description": "A real-time strategy game.",
     },
     "teeworlds": {
-        "info_link": "https://grlanparty.info/teeworlds",
+        "info_link": "https://grlanparty.info/teeworlds/index.html",
         "description": "A fast-paced online multiplayer platformer.",
     },
     "40k_speed_freeks": {
-        "info_link": "https://grlanparty.info/40k_speed_freeks",
+        "info_link": "https://grlanparty.info/40k_speed_freeks/index.html",
         "description": "A racing game set in the Warhammer 40k universe.",
     },
 }
@@ -173,9 +173,44 @@ async def server_info(
         game_name (Optional[str], optional): The name of the game. Defaults to None.
     """
     if not game_name:
-        await ctx.send(
-            f"No server specified. Please provide a valid hosted server name. Valid hosted servers are:\n{hosted_server_list_help_string}"
-        )
+        status_messages = []
+        async with aiohttp.ClientSession() as session:
+            for game in hosted_server_list:
+                game_info = featured_games.get(game)
+                server_status_url = game_info.get("server_status_url")
+                stack_name = game_info.get("stack_name", game)
+                info_link = game_info.get(
+                    "info_link", f"https://grlanparty.info/{stack_name}"
+                )
+                server_url = (
+                    f"{game_info['stack_name']}.grlanparty.info"
+                    if "stack_name" in game_info
+                    else None
+                )
+
+                if not server_status_url:
+                    status_messages.append(
+                        f"No hosted server configured for {game}. More info on multiplayer: {info_link}"
+                    )
+                    continue
+
+                async with session.get(server_status_url) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        server_online = data.get("result", False)
+                        status_emoji = "🟢" if server_online else "🔴"
+                        status_message = "online" if server_online else "offline"
+                        status_messages.append(
+                            f"The server for {game} is {status_message} {status_emoji}.\n"
+                            f"Server URL: {server_url}\n"
+                            f"More info: {info_link}"
+                        )
+                    else:
+                        status_messages.append(
+                            f"Error fetching server status for {game}."
+                        )
+
+        await ctx.send("\n\n".join(status_messages))
         return
 
     if game_name not in featured_games:
@@ -188,7 +223,7 @@ async def server_info(
     server_status_url: Optional[str] = game_info.get("server_status_url")
     stack_name: str = game_info.get("stack_name", game_name)
     info_link: str = game_info.get(
-        "info_link", f"https://grlanparty.info/{stack_name}/index.html"
+        "info_link", f"https://grlanparty.info/{stack_name}"
     )
 
     server_url: Optional[str] = None
@@ -209,7 +244,7 @@ async def server_info(
                 status_emoji: str = "🟢" if server_online else "🔴"
                 status_message: str = "online" if server_online else "offline"
                 await ctx.send(
-                    f"The server for {game_name} is {status_message} {status_emoji}.\n " 
+                    f"The server for {game_name} is {status_message} {status_emoji}.\n "
                     f"Server URL: {server_url}\n "
                     f"More info: {info_link}"
                 )
@@ -320,12 +355,23 @@ async def game_info(
     stack_name: str = game_info.get("stack_name", game_name)
     info_link: str = game_info.get("info_link", f"https://grlanparty.info/{stack_name}")
     description: str = game_info.get("description", "No description available.")
-
+    if "server_status_url" in game_info:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(game_info["server_status_url"]) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    server_online = data.get("result", False)
+                    status_emoji = "🟢" if server_online else "🔴"
+                    server_info = f"Server status: {status_emoji}\nServer URL: {game_info['stack_name']}.grlanparty.info\n"
+                else:
+                    server_info = "Error fetching server status.\n"
+    else:
+        server_info = None
+    
     await ctx.send(
-        f"**{game_name}**\nDescription: {description}\nMore info: {info_link}"
+        f"**{game_name}**\nDescription: {description}\n{server_info}\nMore info: {info_link}"
     )
     logger.info(f"Game info command executed for {game_name}.")
-
 
 # Start the bot client
 client.start(discord_bot_client_token)
