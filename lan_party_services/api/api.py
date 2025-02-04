@@ -68,7 +68,7 @@ class ApiGateway(Stack):
             rest_api_name="Status Service",
             description="This service returns status of ECS tasks. (True, False)",
             default_cors_preflight_options={
-                "allow_origins": ["https://grlanparty.info", "http://localhost"],
+                "allow_origins": [f"https://www.{domain_name}", f"https://{domain_name}", "http://localhost:*"],
                 "allow_methods": apigateway.Cors.ALL_METHODS,
             },
         )

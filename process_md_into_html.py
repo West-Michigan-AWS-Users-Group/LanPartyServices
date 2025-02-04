@@ -21,7 +21,9 @@ def convert_md_to_html(root_dir: str, target_dir: str) -> None:
         # Skip the discord_bot directory
         if "discord_bot" in subdir:
             continue
-        if "api" in subdir:
+        elif "api" in subdir:
+            continue
+        elif "nlb" in subdir:
             continue
 
         if "README.md" in files:
