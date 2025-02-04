@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function() {
             circle.style.height = "10px";
             circle.style.borderRadius = "50%";
             circle.style.marginLeft = "5px";
-            circle.style.backgroundColor = data.result === "true" ? "green" : "grey";
+            circle.style.backgroundColor = data.result === true ? "green" : "grey";
             statusElement.appendChild(circle);
         })
         .catch(error => {
