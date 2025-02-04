@@ -77,7 +77,7 @@ hosted_server_list: list = [
     game for game in featured_games if "server_status_url" in featured_games[game]
 ]
 hosted_server_list_help_string: str = "\n".join(
-    [f"/server-info {game}" for game in hosted_server_list]
+    [f"`{game}`" for game in hosted_server_list]
 )
 
 # Create an instance of the bot client
@@ -174,7 +174,7 @@ async def server_info(
     """
     if not game_name:
         await ctx.send(
-            f"No server specified. Please provide a game name. Valid hosted servers are:\n{hosted_server_list_help_string}"
+            f"No server specified. Please provide a valid hosted server name. Valid hosted servers are:\n{hosted_server_list_help_string}"
         )
         return
 
@@ -186,8 +186,9 @@ async def server_info(
 
     game_info: dict = featured_games.get(game_name)
     server_status_url: Optional[str] = game_info.get("server_status_url")
+    server_url: f"{game_info.get('stack_name', game_name)}.grlanparty.info"
     stack_name: str = game_info.get("stack_name", game_name)
-    info_link: str = game_info.get("info_link", f"https://grlanparty.info/{stack_name}")
+    info_link: str = game_info.get("info_link", f"https://grlanparty.info/{stack_name}/index.html")
 
     if not server_status_url:
         await ctx.send(
@@ -203,7 +204,7 @@ async def server_info(
                 status_emoji: str = "🟢" if server_online else "🔴"
                 status_message: str = "online" if server_online else "offline"
                 await ctx.send(
-                    f"The server for {game_name} is {status_message} {status_emoji}. More info: {info_link}"
+                    f"The server for {game_name} is {status_message} {status_emoji}.\n Server URL: {server_url}\n More info: {info_link}"
                 )
             else:
                 await ctx.send(f"Error fetching server status for {game_name}.")
