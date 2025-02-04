@@ -174,7 +174,7 @@ async def server_info(
     """
     if not game_name:
         await ctx.send(
-            f"No server specified. Please provide a game name. Valid options are:\n{hosted_server_list_help_string}"
+            f"No server specified. Please provide a game name. Valid hosted servers are:\n{hosted_server_list_help_string}"
         )
         return
 
