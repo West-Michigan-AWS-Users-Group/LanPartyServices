@@ -4,6 +4,7 @@ from typing import Optional
 
 import aiohttp
 import interactions
+from interactions import OptionType, slash_option
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -156,6 +157,12 @@ async def user_help(ctx: interactions.SlashContext) -> None:
     name="server-info",
     description="Command to get server information about a game.",
 )
+@slash_option(
+    name="game_name",
+    description="The name of the game",
+    required=False,
+    opt_type=OptionType.STRING,
+)
 async def server_info(
     ctx: interactions.SlashContext, game_name: Optional[str] = None
 ) -> None:
@@ -167,13 +174,13 @@ async def server_info(
     """
     if not game_name:
         await ctx.send(
-            f"No game specified. Please provide a game name. Valid options are:\n{games_list_string}"
+            f"No server specified. Please provide a game name. Valid options are:\n{hosted_server_list_help_string}"
         )
         return
 
     if game_name not in featured_games:
         await ctx.send(
-            f"No information available for the game: {game_name}\n Try one of the following:\n{games_list_string}"
+            f"No information available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
         )
         return
 
@@ -206,6 +213,12 @@ async def server_info(
     name="start",
     description="Command to start a server.",
 )
+@slash_option(
+    name="game_name",
+    description="The name of the game",
+    required=False,
+    opt_type=OptionType.STRING,
+)
 async def start(
     ctx: interactions.SlashContext, game_name: Optional[str] = None
 ) -> None:
@@ -235,6 +248,12 @@ async def start(
     name="stop",
     description="Command to stop a server.",
 )
+@slash_option(
+    name="game_name",
+    description="The name of the game",
+    required=False,
+    opt_type=OptionType.STRING,
+)
 async def stop(ctx: interactions.SlashContext, game_name: Optional[str] = None) -> None:
     """Slash command to stop a server.
 
@@ -261,6 +280,12 @@ async def stop(ctx: interactions.SlashContext, game_name: Optional[str] = None) 
 @interactions.slash_command(
     name="game-info",
     description="Command to get information about a game.",
+)
+@slash_option(
+    name="game_name",
+    description="The name of the game",
+    required=False,
+    opt_type=OptionType.STRING,
 )
 async def game_info(
     ctx: interactions.SlashContext, game_name: Optional[str] = None
