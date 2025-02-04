@@ -19,7 +19,7 @@ discord_bot_client_token: Optional[str] = os.getenv("DISCORD_BOT_CLIENT_TOKEN")
 # Featured games dictionary
 featured_games: dict = {
     "tee-worlds": {
-        "info_link": "https://grlanparty.info/tee-world/index.html",
+        "info_link": "https://grlanparty.info/tee-worlds/index.html",
         "server_status_url": "https://api.grlanparty.info/status?stack_name=teeworlds",
         "description": "A fast-paced online multiplayer platformer.",
         "stack_name": "teeworlds",
@@ -139,10 +139,10 @@ async def user_help(ctx: interactions.SlashContext) -> None:
     await ctx.send(
         "Hello! I am the LAN Party Bot. I am used to provide information on games and assets used in a party setting. "
         "I can help with starting or stopping servers, as well as providing links to game information on how to install"
-        "and play. "
+        " and play. "
         "**The available commands are:**\n"
         "`/user-help` - Get help information about this bot.\n"
-        "`/server-info <game_name>` - Get the status of a specific server or all servers.\n"
+        "`/server-info` - Get the status of hosted servers.\n"
         "`/start` - Start a server.\n"
         "`/stop` - Stop a server.\n"
         "`/game-info` - Get information about a game."
