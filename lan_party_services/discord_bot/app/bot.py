@@ -142,7 +142,7 @@ async def hello_world(ctx: interactions.SlashContext):
 
 
 @interactions.slash_command(
-    name="help",
+    name="user-help",
     description="Command that provides help information about this bot.",
 )
 async def user_help(ctx: interactions.SlashContext):
@@ -151,7 +151,7 @@ async def user_help(ctx: interactions.SlashContext):
         "I can help with starting or stopping servers, as well as providing links to game information on how to install"
         "and play. "
         "**The available commands are:**\n"
-        "`/help` - Get help information about this bot.\n"
+        "`/user-help` - Get help information about this bot.\n"
         "`/server-info <game_name>` - Get the status of a specific server or all servers.\n"
         "`/start` - Start a server.\n"
         "`/stop` - Stop a server.\n"
@@ -167,11 +167,14 @@ async def user_help(ctx: interactions.SlashContext):
     name="server-info",
     description="Command that provides server information about this bot to the user.",
 )
-async def fetch_server_info(game_name: str) -> str:
+async def server_info(game_name: str = None) -> str:
     import aiohttp
 
+    if not game_name:
+        return f"No game specified. Please provide a game name. Valid options are:\n{games_list_string}"
+
     if game_name not in featured_games:
-        return f"No information available for the game: {game_name}\n Try one of the following:\n {hosted_server_list}"
+        return f"No information available for the game: {game_name}\n Try one of the following:\n{games_list_string}"
 
     game_info = featured_games.get(game_name)
     server_status_url = game_info.get("server_status_url")

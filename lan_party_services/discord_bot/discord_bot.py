@@ -114,7 +114,7 @@ class DiscordBot(Stack):
         )
 
         # Main container with health check and secrets
-        main_container = task_definition.add_container(
+        task_definition.add_container(
             f"{app_group_l}-container",
             image=ecs.ContainerImage.from_docker_image_asset(image),
             memory_limit_mib=256,
@@ -127,17 +127,10 @@ class DiscordBot(Stack):
                     discord_bot_client_token
                 ),
             },
-            # health_check=ecs.HealthCheck(
-            #     command=["CMD-SHELL", "curl -f http://localhost/ || exit 1"],
-            #     interval=Duration.seconds(30),
-            #     timeout=Duration.seconds(5),
-            #     retries=3,
-            #     start_period=Duration.seconds(60),
-            # ),
         )
 
         # Create the Fargate service
-        service = ecs.FargateService(
+        ecs.FargateService(
             self,
             f"{app_group}Service",
             cluster=cluster,
