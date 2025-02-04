@@ -206,13 +206,27 @@ async def server_info(
     name="start",
     description="Command to start a server.",
 )
-async def start(ctx: interactions.SlashContext, game_name: str) -> None:
+async def start(
+    ctx: interactions.SlashContext, game_name: Optional[str] = None
+) -> None:
     """Slash command to start a server.
 
     Args:
         ctx (interactions.SlashContext): The context of the command.
-        game_name (str): The name of the game.
+        game_name (Optional[str], optional): The name of the game. Defaults to None.
     """
+    if not game_name:
+        await ctx.send(
+            f"No game specified. Please provide a game name. Valid options are:\n{hosted_server_list_help_string}"
+        )
+        return
+
+    if game_name not in hosted_server_list:
+        await ctx.send(
+            f"No hosted server available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
+        )
+        return
+
     await ctx.send(f"Start server functionality not implemented yet for {game_name}...")
     logger.info(f"Start server mock command executed for {game_name}.")
 
@@ -221,13 +235,25 @@ async def start(ctx: interactions.SlashContext, game_name: str) -> None:
     name="stop",
     description="Command to stop a server.",
 )
-async def stop(ctx: interactions.SlashContext, game_name: str) -> None:
+async def stop(ctx: interactions.SlashContext, game_name: Optional[str] = None) -> None:
     """Slash command to stop a server.
 
     Args:
         ctx (interactions.SlashContext): The context of the command.
-        game_name (str): The name of the game.
+        game_name (Optional[str], optional): The name of the game. Defaults to None.
     """
+    if not game_name:
+        await ctx.send(
+            f"No game specified. Please provide a game name. Valid options are:\n{hosted_server_list_help_string}"
+        )
+        return
+
+    if game_name not in hosted_server_list:
+        await ctx.send(
+            f"No hosted server available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
+        )
+        return
+
     await ctx.send(f"Stop server functionality not implemented yet for {game_name}...")
     logger.info(f"Stop server mock command executed for {game_name}.")
 
