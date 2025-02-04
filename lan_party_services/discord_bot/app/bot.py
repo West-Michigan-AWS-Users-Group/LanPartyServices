@@ -1,34 +1,22 @@
-# This code shows a very brief and small example of how to create a bot with our library.
-# This example does not cover all the features of the library, but it is enough to get you started.
-# In order to learn more about how to use the library, please head over to our documentation:
-# https://interactions-py.github.io/interactions.py/
-
 import logging
 import os
+from typing import Optional
 
-ecs_environment = os.getenv("ENVIRONMENT")
-
-# The first thing you need to do is import the library.
+import aiohttp
 import interactions
-
-# Now, let's create an instance of a bot.
-# When you make a bot, we refer to it as the "client."
-# The client is the main object that interacts with the Gateway, what talks to Discord.
-# The client is also the main object that interacts with the API, what makes requests with Discord.
-# The client can also have "intents" that are what the bot recieves,
-# in this case the default ones and message content (a privilaged intent that needs
-# to be enabled in the developer portal)
-intents = interactions.Intents.DEFAULT | interactions.Intents.MESSAGE_CONTENT
-client = interactions.Client(intents=intents)
-
-# We need to get the token from the environment variables.
-discord_bot_client_token = os.getenv("DISCORD_BOT_CLIENT_TOKEN")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-featured_games = {
+# Environment variable for ECS environment
+ecs_environment: Optional[str] = os.getenv("ENVIRONMENT")
+
+# Discord bot client token from environment variables
+discord_bot_client_token: Optional[str] = os.getenv("DISCORD_BOT_CLIENT_TOKEN")
+
+# Featured games dictionary
+featured_games: dict = {
     "tee-worlds": {
         "info_link": "https://grlanparty.info/tee-world",
         "server_status_url": "https://api.grlanparty.info/status?stack_name=teeworlds",
@@ -78,21 +66,29 @@ featured_games = {
         "description": "A racing game set in the Warhammer 40k universe.",
     },
 }
-games_list_string = "\n".join([f"- `{game}`" for game in featured_games])
-game_list_help_string = "\n".join([f"/game-info {game}" for game in featured_games])
-hosted_server_list = [
+
+# Games list strings for help messages
+games_list_string: str = "\n".join([f"- `{game}`" for game in featured_games])
+game_list_help_string: str = "\n".join(
+    [f"/game-info {game}" for game in featured_games]
+)
+hosted_server_list: list = [
     game for game in featured_games if "server_status_url" in featured_games[game]
 ]
-hosted_server_list_help_string = "\n".join(
+hosted_server_list_help_string: str = "\n".join(
     [f"/server-info {game}" for game in hosted_server_list]
 )
 
+# Create an instance of the bot client
+intents: interactions.Intents = (
+    interactions.Intents.DEFAULT | interactions.Intents.MESSAGE_CONTENT
+)
+client: interactions.Client = interactions.Client(intents=intents)
 
-# With our client established, let's have the library inform us when the client is ready.
-# These are known as event listeners. An event listener can be established in one of two ways.
-# You can provide the name of the event, prefixed by an "on_", or by telling the event decorator what event it is.
+
 @interactions.listen()
-async def on_ready():
+async def on_ready() -> None:
+    """Event listener for when the bot is ready."""
     logger.info(f"We're online! We've logged in as {client.app.name}.")
     if client.latency != float("inf") and client.latency is not None:
         logger.info(f"Our latency is {round(client.latency)} ms.")
@@ -100,44 +96,32 @@ async def on_ready():
         logger.info("Latency is infinity or undefined, cannot convert to integer.")
 
 
-# We can either pass in the event name or make the function name be the event name.
 @interactions.listen("on_message_create")
-async def name_this_however_you_want(message_create: interactions.events.MessageCreate):
-    # Whenever we specify any other event type that isn't "READY," the function underneath
-    # the decorator will most likely have an argument required. This argument is the data
-    # that is being supplied back to us developers, which we call a data model.
+async def name_this_however_you_want(
+    message_create: interactions.events.MessageCreate,
+) -> None:
+    """Event listener for when a message is created.
 
-    # In this example, we're listening to messages being created. This means we can expect
-    # a "message_create" argument to be passed to the function, which will contain the
-    # data model for the message
-
-    # We can use the data model to access the data we need.
-    # Keep in mind that you can only access the message content if your bot has the MESSAGE_CONTENT intent.
-    # You can find more information on this in the migration section of the quickstart guide.
+    Args:
+        message_create (interactions.events.MessageCreate): The message create event.
+    """
     message: interactions.Message = message_create.message
     logger.info(
         f"We've received a message from {message.author.username}. The message is: {message.content}."
     )
 
 
-# Now, let's create a command.
-# A command is a function that is called when a user types out a command.
-# The command is called with a context object, which contains information about the user, the channel, and the guild.
-# Context is what we call the described information given from an interaction response, what comes from a command.
-# The context object in this case is a class for commands, but can also be one for components if used that way.
 @interactions.slash_command(
     name="hello-world",
     description='A command that says "hello world!" and returns the environment.',
 )
-async def hello_world(ctx: interactions.SlashContext):
-    # "ctx" is an abbreviation of the context object.
-    # You don't need to type hint this, but it's recommended to do so.
+async def hello_world(ctx: interactions.SlashContext) -> None:
+    """Slash command that says 'hello world!' and returns the environment.
 
-    # Now, let's send back a response.
-    # The interaction response should be the LAST thing you do when a command is ran.
+    Args:
+        ctx (interactions.SlashContext): The context of the command.
+    """
     await ctx.send(f"Hello, I am the LAN party bot running in the {ecs_environment}!")
-
-    # However, any code you put after a response will still execute unless you prevent it from doing so.
     logger.info("we ran.")
 
 
@@ -145,7 +129,12 @@ async def hello_world(ctx: interactions.SlashContext):
     name="user-help",
     description="Command that provides help information about this bot.",
 )
-async def user_help(ctx: interactions.SlashContext):
+async def user_help(ctx: interactions.SlashContext) -> None:
+    """Slash command that provides help information about this bot.
+
+    Args:
+        ctx (interactions.SlashContext): The context of the command.
+    """
     await ctx.send(
         "Hello! I am the LAN Party Bot. I am used to provide information on games and assets used in a party setting. "
         "I can help with starting or stopping servers, as well as providing links to game information on how to install"
@@ -165,72 +154,113 @@ async def user_help(ctx: interactions.SlashContext):
 
 @interactions.slash_command(
     name="server-info",
-    description="Command that provides server information about this bot to the user.",
+    description="Command to get server information about a game.",
 )
-async def server_info(game_name: str = None) -> str:
-    import aiohttp
+async def server_info(
+    ctx: interactions.SlashContext, game_name: Optional[str] = None
+) -> None:
+    """Slash command to get server information about a game.
 
+    Args:
+        ctx (interactions.SlashContext): The context of the command.
+        game_name (Optional[str], optional): The name of the game. Defaults to None.
+    """
     if not game_name:
-        return f"No game specified. Please provide a game name. Valid options are:\n{games_list_string}"
+        await ctx.send(
+            f"No game specified. Please provide a game name. Valid options are:\n{games_list_string}"
+        )
+        return
 
     if game_name not in featured_games:
-        return f"No information available for the game: {game_name}\n Try one of the following:\n{games_list_string}"
+        await ctx.send(
+            f"No information available for the game: {game_name}\n Try one of the following:\n{games_list_string}"
+        )
+        return
 
-    game_info = featured_games.get(game_name)
-    server_status_url = game_info.get("server_status_url")
-    stack_name = game_info.get("stack_name", game_name)
-    info_link = game_info.get("info_link", f"https://grlanparty.info/{stack_name}")
+    game_info: dict = featured_games.get(game_name)
+    server_status_url: Optional[str] = game_info.get("server_status_url")
+    stack_name: str = game_info.get("stack_name", game_name)
+    info_link: str = game_info.get("info_link", f"https://grlanparty.info/{stack_name}")
 
     if not server_status_url:
-        return f"No hosted server configured for {game_name}. More info on multiplayer: {info_link}"
+        await ctx.send(
+            f"No hosted server configured for {game_name}. More info on multiplayer: {info_link}"
+        )
+        return
 
     async with aiohttp.ClientSession() as session:
         async with session.get(server_status_url) as response:
             if response.status == 200:
-                data = await response.json()
-                server_online = data.get("result", False)
-                status_emoji = "🟢" if server_online else "🔴"
-                status_message = "online" if server_online else "offline"
-                return f"The server for {game_name} is {status_message} {status_emoji}. More info: {info_link}"
+                data: dict = await response.json()
+                server_online: bool = data.get("result", False)
+                status_emoji: str = "🟢" if server_online else "🔴"
+                status_message: str = "online" if server_online else "offline"
+                await ctx.send(
+                    f"The server for {game_name} is {status_message} {status_emoji}. More info: {info_link}"
+                )
             else:
-                return f"Error fetching server status for {game_name}."
+                await ctx.send(f"Error fetching server status for {game_name}.")
 
 
 @interactions.slash_command(
     name="start",
     description="Command to start a server.",
 )
-async def start_server(ctx: interactions.SlashContext, game_name: str):
+async def start(ctx: interactions.SlashContext, game_name: str) -> None:
+    """Slash command to start a server.
+
+    Args:
+        ctx (interactions.SlashContext): The context of the command.
+        game_name (str): The name of the game.
+    """
     await ctx.send(f"Start server functionality not implemented yet for {game_name}...")
-    # Placeholder logic for starting the server
-    logger.info(f"Start server command executed for {game_name}.")
+    logger.info(f"Start server mock command executed for {game_name}.")
 
 
 @interactions.slash_command(
     name="stop",
     description="Command to stop a server.",
 )
-async def stop_server(ctx: interactions.SlashContext, game_name: str):
+async def stop(ctx: interactions.SlashContext, game_name: str) -> None:
+    """Slash command to stop a server.
+
+    Args:
+        ctx (interactions.SlashContext): The context of the command.
+        game_name (str): The name of the game.
+    """
     await ctx.send(f"Stop server functionality not implemented yet for {game_name}...")
-    # Placeholder logic for stopping the server
-    logger.info(f"Stop server command executed for {game_name}.")
+    logger.info(f"Stop server mock command executed for {game_name}.")
 
 
 @interactions.slash_command(
     name="game-info",
     description="Command to get information about a game.",
 )
-async def game_info(ctx: interactions.SlashContext, game_name: str):
-    if game_name not in featured_games:
+async def game_info(
+    ctx: interactions.SlashContext, game_name: Optional[str] = None
+) -> None:
+    """Slash command to get information about a game.
+
+    Args:
+        ctx (interactions.SlashContext): The context of the command.
+        game_name (Optional[str], optional): The name of the game. Defaults to None.
+    """
+    if not game_name:
         await ctx.send(
-            f"No information available for the game: {game_name}\n Try one of the following:\n {games_list_string}"
+            f"No game specified. Please provide a game name. Valid options are:\n{games_list_string}"
         )
         return
 
-    game_info = featured_games.get(game_name)
-    stack_name = game_info.get("stack_name", game_name)
-    info_link = game_info.get("info_link", f"https://grlanparty.info/{stack_name}")
-    description = game_info.get("description", "No description available.")
+    if game_name not in featured_games:
+        await ctx.send(
+            f"No information available for the game: {game_name}\n Try one of the following:\n{games_list_string}"
+        )
+        return
+
+    game_info: dict = featured_games.get(game_name)
+    stack_name: str = game_info.get("stack_name", game_name)
+    info_link: str = game_info.get("info_link", f"https://grlanparty.info/{stack_name}")
+    description: str = game_info.get("description", "No description available.")
 
     await ctx.send(
         f"**{game_name}**\nDescription: {description}\nMore info: {info_link}"
@@ -238,14 +268,5 @@ async def game_info(ctx: interactions.SlashContext, game_name: str):
     logger.info(f"Game info command executed for {game_name}.")
 
 
-# After we've declared all of the bot code we want, we need to tell the library to run our bot.
-# In this example, we've decided to do some things in a different way without explicitly d saying it:
-
-# - we'll be syncing the commands automatically.
-#   if you want to do this manually, you can do it by passing disable_sync=False in the Client
-#   object on line 13.
-# - we are not setting a presence.
-# - we are not automatically sharding, and registering the connection under 1 shard.
-# - we are using default intents, which are Gateway intents excluding privileged ones
-# - and the privilaged message content intent.
+# Start the bot client
 client.start(discord_bot_client_token)
