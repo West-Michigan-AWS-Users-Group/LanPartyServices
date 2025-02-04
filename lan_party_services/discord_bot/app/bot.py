@@ -365,10 +365,17 @@ async def game_info(
                     server_info = "Error fetching server status.\n"
     else:
         server_info = None
-
-    await ctx.send(
-        f"**{game_name}**\nDescription: {description}\n{server_info}\nMore info: {info_link}"
-    )
+        await ctx.send(
+            f"**{game_name}**\nDescription: {description}\nMore info: {info_link}"
+        )
+    if server_info:
+        await ctx.send(
+            f"**{game_name}**\nDescription: {description}\n{server_info}More info: {info_link}"
+        )
+    else:
+        await ctx.send(
+            f"**{game_name}**\nDescription: {description}\nMore info: {info_link}"
+        )
     logger.info(f"Game info command executed for {game_name}.")
 
 
