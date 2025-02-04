@@ -222,9 +222,7 @@ async def server_info(
     game_info: dict = featured_games.get(game_name)
     server_status_url: Optional[str] = game_info.get("server_status_url")
     stack_name: str = game_info.get("stack_name", game_name)
-    info_link: str = game_info.get(
-        "info_link", f"https://grlanparty.info/{stack_name}"
-    )
+    info_link: str = game_info.get("info_link", f"https://grlanparty.info/{stack_name}")
 
     server_url: Optional[str] = None
     if "stack_name" in game_info:
@@ -367,11 +365,12 @@ async def game_info(
                     server_info = "Error fetching server status.\n"
     else:
         server_info = None
-    
+
     await ctx.send(
         f"**{game_name}**\nDescription: {description}\n{server_info}\nMore info: {info_link}"
     )
     logger.info(f"Game info command executed for {game_name}.")
+
 
 # Start the bot client
 client.start(discord_bot_client_token)
