@@ -125,13 +125,13 @@ def create_cloudwatch_resources(
     # Define the SSM parameter path
     ssm_parameter_path = f"/{environment}/{app_name}/{stack_name_s}/discord_webhook_url"
 
-    if stack_name_s != 'bot':
+    if stack_name_s != "bot":
         # Fetch the SSM parameter value
         discord_webhook_url = ssm.StringParameter.value_from_lookup(
             scope, ssm_parameter_path
         )
 
-    # Determine the stack's folder path
+        # Determine the stack's folder path
         stack_webhook_module_path = os.path.join(
             os.path.dirname(__file__), "..", stack_name_s, "discord_webhook_lambda"
         )

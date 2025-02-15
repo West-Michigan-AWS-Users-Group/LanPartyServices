@@ -93,7 +93,18 @@ class DiscordBot(Stack):
                             resources=[log_group.log_group_arn],
                         )
                     ]
-                )
+                ),
+                "CloudFormationReadPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            actions=[
+                                "cloudformation:DescribeStacks",
+                                "cloudformation:ListStacks",
+                            ],
+                            resources=["*"],
+                        )
+                    ]
+                ),
             },
         )
 
@@ -110,7 +121,15 @@ class DiscordBot(Stack):
         discord_bot_client_token = ssm.StringParameter.from_secure_string_parameter_attributes(
             self,
             "DiscordBotClientToken",
-            parameter_name='/prod/lan_party_services/discord_bot/discord_bot_client_token',
+            parameter_name="/prod/lan_party_services/discord_bot/discord_bot_client_token",
+            version=1,
+        )
+
+        # Fetch the secure SSM parameter
+        github_api_token = ssm.StringParameter.from_secure_string_parameter_attributes(
+            self,
+            "GithubApiToken",
+            parameter_name="/prod/lan_party_services/discord_bot/github_api_token",
             version=1,
         )
 
@@ -127,6 +146,7 @@ class DiscordBot(Stack):
                 "DISCORD_BOT_CLIENT_TOKEN": ecs.Secret.from_ssm_parameter(
                     discord_bot_client_token
                 ),
+                "GITHUB_API_TOKEN": ecs.Secret.from_ssm_parameter(github_api_token),
             },
         )
 

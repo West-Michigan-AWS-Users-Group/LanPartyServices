@@ -6,6 +6,9 @@ import aiohttp
 import interactions
 from interactions import OptionType, slash_option
 
+from github import start_adhoc_workflow
+from lan_party_services.discord_bot.app.aws import check_stacks_exist
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -281,8 +284,42 @@ async def start(
         )
         return
 
-    await ctx.send(f"Start server functionality not implemented yet for {game_name}...")
-    logger.info(f"Start server mock command executed for {game_name}.")
+    # Check if core and nlb stacks are deployed
+    if not check_stacks_exist(["core"]):
+        await ctx.send(
+            "Required stack 'core' is not deployed. Please deploy it and try again."
+        )
+        return
+
+    if not check_stacks_exist(["nlb"]):
+        await ctx.send(
+            "Required stack 'nlb' is not deployed. Issuing deploy for NLB stack."
+        )
+        response = start_adhoc_workflow("nlb")
+        await ctx.send(
+            f"Started NLB stack. Response: {response}. Please wait about 3 minutes and try again"
+        )
+        return
+    elif check_stacks_exist(["nlb"]) == "deploying":
+        await ctx.send(
+            "The 'nlb' stack is currently being deployed. Please wait until the deployment is complete and "
+            "try again."
+        )
+        return
+
+    try:
+        # Call the start_adhoc_workflow function
+        response = start_adhoc_workflow(game_name, "cdk_adhoc_deploy.yml")
+        await ctx.send(
+            f"Started server for {game_name}. Response: {response}. The server will send a notification upon"
+            f" initialization."
+        )
+        logger.info(
+            f"Start server command executed for {game_name}. Response: {response}"
+        )
+    except Exception as e:
+        await ctx.send(f"Failed to start server for {game_name}. Error: {str(e)}")
+        logger.error(f"Failed to start server for {game_name}. Error: {str(e)}")
 
 
 @interactions.slash_command(
@@ -314,8 +351,26 @@ async def stop(ctx: interactions.SlashContext, game_name: Optional[str] = None) 
         )
         return
 
-    await ctx.send(f"Stop server functionality not implemented yet for {game_name}...")
-    logger.info(f"Stop server mock command executed for {game_name}.")
+    # Check if the stack is deployed
+    if not check_stacks_exist([game_name]):
+        await ctx.send(
+            f"Required stack '{game_name}' is not deployed. No action taken."
+        )
+        return
+
+    try:
+        # Call the stop_adhoc_workflow function
+        response = start_adhoc_workflow(game_name, workflow="cdk_adhoc_destroy.yml")
+        await ctx.send(
+            f"Stopped server for {game_name}. Response: {response}. The server will send a notification upon"
+            f" destruction."
+        )
+        logger.info(
+            f"Stop server command executed for {game_name}. Response: {response}"
+        )
+    except Exception as e:
+        await ctx.send(f"Failed to stop server for {game_name}. Error: {str(e)}")
+        logger.error(f"Failed to stop server for {game_name}. Error: {str(e)}")
 
 
 @interactions.slash_command(
