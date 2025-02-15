@@ -1,6 +1,9 @@
 # LAN Party Services
 AWS CDK app to deploy and run a web server and number of video game servers for a LAN party.
 
+
+![diagram.png](diagram.png)
+
 This app contains:
 - Web front end for serving content for LAN attendees - Hosted on Cloudfront backed by S3. 
 This app dynamically generates documentation from each app's readme file for simple templated renderings of info pages.
