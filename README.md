@@ -7,6 +7,9 @@ AWS CDK app to deploy and run a web server and number of video game servers for 
 This app contains:
 - Web front end for serving content for LAN attendees - Hosted on Cloudfront backed by S3. 
 This app dynamically generates documentation from each app's readme file for simple templated renderings of info pages.
+- API Gateway for querying the status of each game server - Hosted on API Gateway backed by Lambda.
+- Discord bot for querying the status of each game server, and starting and stopping of them - Hosted on ECS
+- Cloudwatch log filters and discord alerts for certain games - used to notify of server events.
 
 Game Servers:
 - Open-RA server
