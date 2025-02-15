@@ -21,6 +21,7 @@ def start_adhoc_workflow(stack_name_function_arg: str, workflow: str) -> str:
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {os.getenv('GITHUB_API_TOKEN')}",
         "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "WMAUG-LanPartyServices-DiscordBot",
     }
 
     # Create the payload
