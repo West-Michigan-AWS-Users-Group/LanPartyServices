@@ -14,7 +14,7 @@ def check_stacks_exist(stack_names: list) -> bool:
 
     for stack_name in stack_names:
         try:
-            response = cf_client.describe_stacks(StackName=stack_name)
+            response = cf_client.describe_stacks(StackName=f'prod-lan-party-services-{stack_name}')
             if not response["Stacks"]:
                 return False
         except cf_client.exceptions.ClientError:
