@@ -7,7 +7,7 @@ import interactions
 from interactions import OptionType, slash_option
 
 from github import start_adhoc_workflow
-from lan_party_services.discord_bot.app.aws import check_stacks_exist
+from aws import check_stacks_exist
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
