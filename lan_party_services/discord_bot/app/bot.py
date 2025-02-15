@@ -175,8 +175,17 @@ async def server_info(
         ctx (interactions.SlashContext): The context of the command.
         game_name (Optional[str], optional): The name of the game. Defaults to None.
     """
+    if check_stacks_exist(["nlb"]):
+        await ctx.send(
+            f"**{game_name}**\nRequired Network Load Balancer (`nlb`) stack **```diff\n+ is```** deployed. 🟢\n"
+        )
+    else:
+        await ctx.send(
+            f"**{game_name}**\nRequired Network Load Balancer (`nlb`) stack is **`diff\n- not`** deployed. 🔴\n"
+        )
     if not game_name:
         status_messages = []
+        # check to see if nlb stack is deployed by calling cfn function
         async with aiohttp.ClientSession() as session:
             for game in hosted_server_list:
                 game_info = featured_games.get(game)
@@ -217,40 +226,40 @@ async def server_info(
         return
 
     if game_name not in featured_games:
-        await ctx.send(
-            f"No information available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
-        )
-        return
+        if game_name != 'nlb':
+            await ctx.send(
+                f"No information available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
+            )
+            return
+    if game_name != 'nlb':
+        game_info: dict = featured_games.get(game_name)
+        server_status_url: Optional[str] = game_info.get("server_status_url")
+        stack_name: str = game_info.get("stack_name", game_name)
+        info_link: str = game_info.get("info_link", f"https://grlanparty.info/{stack_name}")
 
-    game_info: dict = featured_games.get(game_name)
-    server_status_url: Optional[str] = game_info.get("server_status_url")
-    stack_name: str = game_info.get("stack_name", game_name)
-    info_link: str = game_info.get("info_link", f"https://grlanparty.info/{stack_name}")
+        server_url: Optional[str] = None
+        if "stack_name" in game_info:
+            server_url = f"{game_info['stack_name']}.grlanparty.info"
 
-    server_url: Optional[str] = None
-    if "stack_name" in game_info:
-        server_url = f"{game_info['stack_name']}.grlanparty.info"
-
-    if not server_status_url:
-        await ctx.send(
-            f"No hosted server configured for {game_name}. More info on multiplayer: {info_link}"
-        )
-        return
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(server_status_url) as response:
-            if response.status == 200:
-                data: dict = await response.json()
-                server_online: bool = data.get("result", False)
-                status_emoji: str = "🟢" if server_online else "🔴"
-                status_message: str = "online" if server_online else "offline"
-                await ctx.send(
-                    f"The server for {game_name} is {status_message} {status_emoji}.\n "
-                    f"Server URL: {server_url}\n "
-                    f"More info: {info_link}"
-                )
-            else:
-                await ctx.send(f"Error fetching server status for {game_name}.")
+        if not server_status_url:
+            await ctx.send(
+                f"No hosted server configured for {game_name}. More info on multiplayer: {info_link}"
+            )
+            return
+        async with aiohttp.ClientSession() as session:
+            async with session.get(server_status_url) as response:
+                if response.status == 200:
+                    data: dict = await response.json()
+                    server_online: bool = data.get("result", False)
+                    status_emoji: str = "🟢" if server_online else "🔴"
+                    status_message: str = "online" if server_online else "offline"
+                    await ctx.send(
+                        f"The server for {game_name} is {status_message} {status_emoji}.\n "
+                        f"Server URL: {server_url}\n "
+                        f"More info: {info_link}"
+                    )
+                else:
+                    await ctx.send(f"Error fetching server status for {game_name}.")
 
 
 @interactions.slash_command(
@@ -296,7 +305,7 @@ async def start(
         await ctx.send(
             "Required stack 'nlb' is not deployed. Issuing deploy for NLB stack."
         )
-        response = start_adhoc_workflow("nlb")
+        response = start_adhoc_workflow("nlb", "cdk_adhoc_deploy.yml")
         await ctx.send(
             f"Started NLB stack. Response: {response}. Please wait about 3 minutes and try again"
         )
