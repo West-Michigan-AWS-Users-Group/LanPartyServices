@@ -279,10 +279,11 @@ async def start(
         return
 
     if game_name not in hosted_server_list:
-        await ctx.send(
-            f"No hosted server available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
-        )
-        return
+        if game_name != 'nlb':
+            await ctx.send(
+                f"No hosted server available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
+            )
+            return
 
     # Check if core and nlb stacks are deployed
     if not check_stacks_exist(["core"]):
@@ -304,6 +305,13 @@ async def start(
         await ctx.send(
             "The 'nlb' stack is currently being deployed. Please wait until the deployment is complete and "
             "try again."
+        )
+        return
+
+    # Check if the requested stack is already deployed
+    if check_stacks_exist([game_name]):
+        await ctx.send(
+            f"Requested stack '{game_name}' is already deployed. No action taken."
         )
         return
 
@@ -346,15 +354,16 @@ async def stop(ctx: interactions.SlashContext, game_name: Optional[str] = None) 
         return
 
     if game_name not in hosted_server_list:
-        await ctx.send(
-            f"No hosted server available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
-        )
-        return
+        if game_name != 'nlb':
+            await ctx.send(
+                f"No hosted server available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
+            )
+            return
 
     # Check if the stack is deployed
     if not check_stacks_exist([game_name]):
         await ctx.send(
-            f"Required stack '{game_name}' is not deployed. No action taken."
+            f"Requested stack '{game_name}' is not deployed. No action taken."
         )
         return
 
