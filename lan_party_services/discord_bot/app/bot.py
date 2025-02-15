@@ -175,17 +175,20 @@ async def server_info(
         ctx (interactions.SlashContext): The context of the command.
         game_name (Optional[str], optional): The name of the game. Defaults to None.
     """
+    status_messages = []
+
+    # Check if NLB stack is deployed
     if check_stacks_exist(["nlb"]):
-        await ctx.send(
-            f"**{game_name}**\nRequired Network Load Balancer (`nlb`) stack **```diff\n+ is```** deployed. 🟢\n"
+        status_messages.append(
+            f"Network Load Balancer (`nlb`) stack **`is`** deployed. 🟢\n"
         )
     else:
-        await ctx.send(
-            f"**{game_name}**\nRequired Network Load Balancer (`nlb`) stack is **`diff\n- not`** deployed. 🔴\n"
+        status_messages.append(
+            f"Network Load Balancer (`nlb`) stack is **`not`** deployed. 🔴\n"
         )
+
     if not game_name:
-        status_messages = []
-        # check to see if nlb stack is deployed by calling cfn function
+        # Check the status of all hosted servers
         async with aiohttp.ClientSession() as session:
             for game in hosted_server_list:
                 game_info = featured_games.get(game)
@@ -226,16 +229,18 @@ async def server_info(
         return
 
     if game_name not in featured_games:
-        if game_name != 'nlb':
+        if game_name != "nlb":
             await ctx.send(
                 f"No information available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
             )
             return
-    if game_name != 'nlb':
+    if game_name != "nlb":
         game_info: dict = featured_games.get(game_name)
         server_status_url: Optional[str] = game_info.get("server_status_url")
         stack_name: str = game_info.get("stack_name", game_name)
-        info_link: str = game_info.get("info_link", f"https://grlanparty.info/{stack_name}")
+        info_link: str = game_info.get(
+            "info_link", f"https://grlanparty.info/{stack_name}"
+        )
 
         server_url: Optional[str] = None
         if "stack_name" in game_info:
@@ -253,13 +258,17 @@ async def server_info(
                     server_online: bool = data.get("result", False)
                     status_emoji: str = "🟢" if server_online else "🔴"
                     status_message: str = "online" if server_online else "offline"
-                    await ctx.send(
+                    status_messages.append(
                         f"The server for {game_name} is {status_message} {status_emoji}.\n "
                         f"Server URL: {server_url}\n "
                         f"More info: {info_link}"
                     )
                 else:
-                    await ctx.send(f"Error fetching server status for {game_name}.")
+                    status_messages.append(
+                        f"Error fetching server status for {game_name}."
+                    )
+
+    await ctx.send("\n\n".join(status_messages))
 
 
 @interactions.slash_command(
@@ -288,7 +297,7 @@ async def start(
         return
 
     if game_name not in hosted_server_list:
-        if game_name != 'nlb':
+        if game_name != "nlb":
             await ctx.send(
                 f"No hosted server available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
             )
@@ -363,7 +372,7 @@ async def stop(ctx: interactions.SlashContext, game_name: Optional[str] = None) 
         return
 
     if game_name not in hosted_server_list:
-        if game_name != 'nlb':
+        if game_name != "nlb":
             await ctx.send(
                 f"No hosted server available for the game: {game_name}\n Try one of the following:\n{hosted_server_list_help_string}"
             )
