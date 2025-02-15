@@ -84,119 +84,121 @@ def create_cloudwatch_resources(
             )
         ],
     )
+    if nlb:
+        # NLB requests per minute widget
+        nlb_requests_widget = cloudwatch.GraphWidget(
+            title="NLB Requests Per Minute",
+            left=[
+                cloudwatch.Metric(
+                    namespace="AWS/NetworkELB",
+                    metric_name="RequestCount",
+                    dimensions_map={"LoadBalancer": nlb.load_balancer_arn},
+                    statistic="Sum",
+                    period=Duration.minutes(1),
+                )
+            ],
+        )
 
-    # NLB requests per minute widget
-    nlb_requests_widget = cloudwatch.GraphWidget(
-        title="NLB Requests Per Minute",
-        left=[
-            cloudwatch.Metric(
-                namespace="AWS/NetworkELB",
-                metric_name="RequestCount",
-                dimensions_map={"LoadBalancer": nlb.load_balancer_arn},
-                statistic="Sum",
-                period=Duration.minutes(1),
-            )
-        ],
-    )
+        # Number of healthy targets widget
+        healthy_targets_widget = cloudwatch.GraphWidget(
+            title="Healthy Targets",
+            left=[
+                cloudwatch.Metric(
+                    namespace="AWS/NetworkELB",
+                    metric_name="HealthyHostCount",
+                    dimensions_map={"LoadBalancer": nlb.load_balancer_arn},
+                    statistic="Average",
+                    period=Duration.minutes(1),
+                )
+            ],
+        )
 
-    # Number of healthy targets widget
-    healthy_targets_widget = cloudwatch.GraphWidget(
-        title="Healthy Targets",
-        left=[
-            cloudwatch.Metric(
-                namespace="AWS/NetworkELB",
-                metric_name="HealthyHostCount",
-                dimensions_map={"LoadBalancer": nlb.load_balancer_arn},
-                statistic="Average",
-                period=Duration.minutes(1),
-            )
-        ],
-    )
-
-    # Add widgets to the dashboard
-    dashboard.add_widgets(
-        cpu_usage_widget,
-        memory_usage_widget,
-        nlb_requests_widget,
-        healthy_targets_widget,
-    )
+    if nlb:
+        # Add widgets to the dashboard
+        dashboard.add_widgets(
+            cpu_usage_widget,
+            memory_usage_widget,
+            nlb_requests_widget,
+            healthy_targets_widget,
+        )
 
     # Define the SSM parameter path
     ssm_parameter_path = f"/{environment}/{app_name}/{stack_name_s}/discord_webhook_url"
 
-    # Fetch the SSM parameter value
-    discord_webhook_url = ssm.StringParameter.value_from_lookup(
-        scope, ssm_parameter_path
-    )
+    if stack_name_s != 'bot':
+        # Fetch the SSM parameter value
+        discord_webhook_url = ssm.StringParameter.value_from_lookup(
+            scope, ssm_parameter_path
+        )
 
     # Determine the stack's folder path
-    stack_webhook_module_path = os.path.join(
-        os.path.dirname(__file__), "..", stack_name_s, "discord_webhook_lambda"
-    )
-
-    # Validate the presence of the directory
-    os.makedirs(stack_webhook_module_path, exist_ok=True)
-
-    # Add an __init__.py file to the directory
-    init_file_path = os.path.join(stack_webhook_module_path, "__init__.py")
-    open(init_file_path, "w").close()
-
-    # Render the Jinja template
-    env = Environment(
-        loader=FileSystemLoader(
-            os.path.join(os.path.dirname(__file__), "discord_webhook_lambda")
+        stack_webhook_module_path = os.path.join(
+            os.path.dirname(__file__), "..", stack_name_s, "discord_webhook_lambda"
         )
-    )
-    template = env.get_template("lambda_function.py.j2")
-    rendered_code = template.render(server_name=stack_name_s.capitalize())
 
-    # Save the rendered code to a temporary file with a unique prefix
-    temp_file_path = os.path.join(stack_webhook_module_path, f"lambda_function.py")
-    with open(temp_file_path, "w") as temp_file:
-        temp_file.write(rendered_code)
+        # Validate the presence of the directory
+        os.makedirs(stack_webhook_module_path, exist_ok=True)
 
-    # Create a Lambda function that can send webhook messages to a Discord channel
-    lambda_function = _lambda.Function(
-        scope,
-        f"{stack_name_ansi}DiscordWebhookLambda",
-        runtime=_lambda.Runtime.PYTHON_3_11,
-        handler=f"lambda_function.lambda_handler",
-        code=_lambda.Code.from_asset(stack_webhook_module_path),
-        environment={"DISCORD_WEBHOOK_URL": discord_webhook_url},
-    )
+        # Add an __init__.py file to the directory
+        init_file_path = os.path.join(stack_webhook_module_path, "__init__.py")
+        open(init_file_path, "w").close()
 
-    # Grant the Lambda function permissions to read from SSM Parameter Store
-    lambda_function.add_to_role_policy(
-        iam.PolicyStatement(
-            actions=["ssm:GetParameter"],
-            resources=[
-                f"arn:aws:ssm:{scope.region}:{scope.account}:parameter{ssm_parameter_path}"
-            ],
+        # Render the Jinja template
+        env = Environment(
+            loader=FileSystemLoader(
+                os.path.join(os.path.dirname(__file__), "discord_webhook_lambda")
+            )
         )
-    )
+        template = env.get_template("lambda_function.py.j2")
+        rendered_code = template.render(server_name=stack_name_s.capitalize())
+
+        # Save the rendered code to a temporary file with a unique prefix
+        temp_file_path = os.path.join(stack_webhook_module_path, f"lambda_function.py")
+        with open(temp_file_path, "w") as temp_file:
+            temp_file.write(rendered_code)
+
+        # Create a Lambda function that can send webhook messages to a Discord channel
+        lambda_function = _lambda.Function(
+            scope,
+            f"{stack_name_ansi}DiscordWebhookLambda",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler=f"lambda_function.lambda_handler",
+            code=_lambda.Code.from_asset(stack_webhook_module_path),
+            environment={"DISCORD_WEBHOOK_URL": discord_webhook_url},
+        )
+
+        # Grant the Lambda function permissions to read from SSM Parameter Store
+        lambda_function.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=["ssm:GetParameter"],
+                resources=[
+                    f"arn:aws:ssm:{scope.region}:{scope.account}:parameter{ssm_parameter_path}"
+                ],
+            )
+        )
 
     # Combine log strings into a single filter pattern
-    combined_filter_pattern = FilterPattern.any_term(*log_strings)
-
-    # Create a single CloudWatch Logs subscription filter with the combined pattern
-    logs.SubscriptionFilter(
-        scope,
-        f"{stack_name_ansi}LogSubscriptionFilter",
-        log_group=log_group,
-        destination=cloudwatch_destinations.LambdaDestination(lambda_function),
-        filter_pattern=combined_filter_pattern,
-    )
-
-    # Create individual metric filters for each log string
-    for log_string in log_strings:
-        log_string_ansi = re.sub(r"[^a-zA-Z0-9]", "", log_string)
-        metric_name = re.sub(r"[:*$]", "_", f"{stack_name_s}_{log_string}")
-        logs.MetricFilter(
+    if log_strings:
+        combined_filter_pattern = FilterPattern.any_term(*log_strings)
+        # Create a single CloudWatch Logs subscription filter with the combined pattern
+        logs.SubscriptionFilter(
             scope,
-            f"{stack_name_ansi}Lf{log_string_ansi}Metric"[:64],
+            f"{stack_name_ansi}LogSubscriptionFilter",
             log_group=log_group,
-            metric_namespace=stack_name_ansi,
-            metric_name=metric_name,
-            filter_pattern=FilterPattern.any_term(log_string),
-            metric_value="1",
+            destination=cloudwatch_destinations.LambdaDestination(lambda_function),
+            filter_pattern=combined_filter_pattern,
         )
+
+        # Create individual metric filters for each log string
+        for log_string in log_strings:
+            log_string_ansi = re.sub(r"[^a-zA-Z0-9]", "", log_string)
+            metric_name = re.sub(r"[:*$]", "_", f"{stack_name_s}_{log_string}")
+            logs.MetricFilter(
+                scope,
+                f"{stack_name_ansi}Lf{log_string_ansi}Metric"[:64],
+                log_group=log_group,
+                metric_namespace=stack_name_ansi,
+                metric_name=metric_name,
+                filter_pattern=FilterPattern.any_term(log_string),
+                metric_value="1",
+            )

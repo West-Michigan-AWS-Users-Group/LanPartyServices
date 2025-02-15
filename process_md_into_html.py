@@ -74,6 +74,7 @@ def render_script_js(root_dir: str, script_path: str) -> None:
             "discord_bot",
             "api",
             "nlb",
+            "bot"
         ]
     ]
 

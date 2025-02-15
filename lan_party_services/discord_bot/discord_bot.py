@@ -13,6 +13,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 
+from lan_party_services.common.cloudwatch import create_cloudwatch_resources
 from lan_party_services.core.core import used_azs
 
 
@@ -109,7 +110,7 @@ class DiscordBot(Stack):
         discord_bot_client_token = ssm.StringParameter.from_secure_string_parameter_attributes(
             self,
             "DiscordBotClientToken",
-            parameter_name="/prod/lan_party_services/discord_bot/discord_bot_client_token",
+            parameter_name='/prod/lan_party_services/discord_bot/discord_bot_client_token',
             version=1,
         )
 
@@ -130,10 +131,14 @@ class DiscordBot(Stack):
         )
 
         # Create the Fargate service
-        ecs.FargateService(
+        service = ecs.FargateService(
             self,
             f"{app_group}Service",
             cluster=cluster,
             task_definition=task_definition,
             desired_count=1,
+        )
+
+        create_cloudwatch_resources(
+            self, self.stack_name, cluster, service, None, log_group, []
         )
