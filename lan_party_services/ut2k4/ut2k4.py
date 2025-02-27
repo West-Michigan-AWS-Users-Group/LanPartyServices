@@ -91,13 +91,14 @@ class ut2k4(Stack):
         ### Server config -
         # Game modes https://wiki.unrealadmin.org/Gametype_List_%28UT2004%29
         # Mutators https://wiki.unrealadmin.org/Mutator_List_%28UT2004%29
-        ffa_dm_deck16_vanilla = "DM-Deck16][?game=XGame.xDeathMatch"
+        ffa_dm_deck17_vanilla = "DM-Deck17?game=XGame.xDeathMatch"
         ffa_dm_orbital_instagib = "DM-Orbital2?game=XGame.xDeathMatch?mutator=XGame.MutInstaGib"
         team_dm_vanilla = "DM-1on1-Roughinery?game=XGame.xTeamGame"
         ctf_facing_worlds_instagib_low_grav = "CTF-FaceClassic?game=XGame.xCTFGame?mutator=UnrealGame.MutLowGrav"
+        onslaught_robot_factory_vanilla = "AS-RobotFactory?game=XGame.xOnSlaught"
 
         # Server start command
-        server_start_command = ffa_dm_deck16_vanilla
+        server_start_command = ffa_dm_deck17_vanilla
 
         # Define log strings to send to Discord, messages matching any of this string will be sent to Discord
         log_strings = ["___New Player Joined -", "UTServerAdmin Initialized", "SIGTERM"]
