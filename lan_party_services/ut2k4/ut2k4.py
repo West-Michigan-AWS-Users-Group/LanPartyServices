@@ -89,13 +89,15 @@ class ut2k4(Stack):
         )
 
         ### Server config -
-        #     Documentation: https://github.com/LacledesLAN/gamesvr-ut2004/blob/master/Documentation/ServerSetup.md
-        #     Key note, there are game modes and build-in mutators. This below list hasn't been validated completely
-        # Game modes and mutators for UT2004
-        ctf_facing_worlds_instagib_low_grav = "CTF-FaceClassic?game=XGame.xCTFGame?mutator=XGame.MMutInstaGib,UnrealGame.MutLowGrav"
+        # Game modes https://wiki.unrealadmin.org/Gametype_List_%28UT2004%29
+        # Mutators https://wiki.unrealadmin.org/Mutator_List_%28UT2004%29
+        ffa_dm_deck16_vanilla = "DM-Deck16][?game=XGame.xDeathMatch"
+        ffa_dm_orbital_instagib = "DM-Orbital2?game=XGame.xDeathMatch?mutator=XGame.MutInstaGib"
+        team_dm_vanilla = "DM-1on1-Roughinery?game=XGame.xTeamGame"
+        ctf_facing_worlds_instagib_low_grav = "CTF-FaceClassic?game=XGame.xCTFGame?mutator=UnrealGame.MutLowGrav"
 
         # Server start command
-        server_start_command = ctf_facing_worlds_instagib_low_grav
+        server_start_command = ffa_dm_deck16_vanilla
 
         # Define log strings to send to Discord, messages matching any of this string will be sent to Discord
         log_strings = ["___New Player Joined -", "UTServerAdmin Initialized", "SIGTERM"]
@@ -143,8 +145,8 @@ class ut2k4(Stack):
             self,
             f"{stack_name_ansi}TaskDef",
             task_role=task_role,
-            memory_limit_mib=512,
-            cpu=256,
+            memory_limit_mib=1024,
+            cpu=512,
         )
 
         # Sidecar container for health checks - uses busybox to respond to http requests
