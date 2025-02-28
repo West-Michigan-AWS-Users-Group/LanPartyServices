@@ -98,7 +98,7 @@ class ut2k4(Stack):
         onslaught_robot_factory_vanilla = "AS-RobotFactory?game=XGame.xOnSlaught"
 
         # Server start command
-        server_start_command = ffa_dm_osiris2_instagib
+        server_start_command = ffa_dm_deck17_vanilla
 
         # Define log strings to send to Discord, messages matching any of this string will be sent to Discord
         log_strings = ["___New Player Joined -", "UTServerAdmin Initialized", "SIGTERM"]
